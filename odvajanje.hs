@@ -95,6 +95,12 @@ instance Floating x => Floating (D x) where
 	acosh = acosh >< recip (sqrt (- 1 + sqr))
 	atanh = asin >< recip (1 - sqr)
 	
+instance Eq a => Eq (D a) where
+	(==) (D a _) (D b _) = (==) a b
+	
+instance Ord a => Ord (D a) where
+	(<=) (D a _) (D b _) = (<=) a b
+	
 f1 :: Floating a => a -> a
 f1 z = sqrt ((sqr z) * 3 * sin z)
 

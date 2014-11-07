@@ -72,8 +72,14 @@ instance Floating a => Floating (D a) where
 	acosh = acosh >< recip (sqrt (- 1 + sqr))
 	atanh = asin >< recip (1 - sqr)
 
+instance Eq a => Eq (D a) where
+	(==) (D a _ _) (D b _ _) = (==) a b
+	
+instance Ord a => Ord (D a) where
+	(<=) (D a _ _) (D b _ _) = (<=) a b
+	
 f1 :: Floating a => a -> a
 f1 z = sqrt ((sqr z) * 3 * sin z)
 
 f2 :: (Ord a, Floating a) => a -> a
-f2 z = min z 0
+f2 z = min (sin z) 0
