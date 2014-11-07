@@ -96,7 +96,7 @@ instance Floating x => Floating (D x) where
 	atanh = asin >< recip (1 - sqr)
 	
 f1 :: Floating a => a -> a
-f1 z = sqrt (3 * sin z)
+f1 z = sqrt ((sqr z) * 3 * sin z)
 
 f2 :: Floating a => a -> a
 f2 z = sqr z
