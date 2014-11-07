@@ -36,25 +36,36 @@ instance Floating b => Floating (a -> b) where
 	acosh = fmap acosh
 	atanh = fmap atanh
 	
-data D a = D a (D a) deriving (Show)
+data D a = D a (Maybe (D a)) deriving (Show)
+
+constD :: Num a => a -> D a
+constD x = D x Nothing
+
+idD :: Num a => a -> D a
+idD x = D x (Just 1)
+
+infixl 6 +&
+(+&) :: Num a => Maybe a -> Maybe a -> Maybe a
+Nothing +& _ = Nothing
+a +& Nothing = a
+Just a +& Just b = Just (a + b)
+
+infixl 7 *&
+(*&) :: Num a => Maybe a -> a -> Maybe a
+Nothing *& _ = Nothing
+Just a *& b = Just (a * b)
 
 infix 0 ><
 (><) :: Num a => (a -> a) -> (D a -> D a) -> (D a -> D a)
-(f >< f') a@(D a0 a') = D (f a0) (a' * f' a)
+(f >< f') a@(D a0 a') = D (f a0) (a' *& f' a)
 
 sqr :: Num a => a -> a
 sqr x = x * x
 
-constD :: Num a => a -> D a
-constD x = D x 0
-
-idD :: Num a => a -> D a
-idD x = D x 1
-
 instance Num a => Num (D a) where
 	fromInteger = constD . fromInteger
-	D a a' + D b b' = D (a + b) (a' + b')
-	x@(D x0 x') * y@(D y0 y') = D (x0 * y0) (x' * y + x * y')
+	D a a' + D b b' = D (a + b) (a' +& b')
+	x@(D x0 x') * y@(D y0 y') = D (x0 * y0) (x' *& y +& y' *& x)
 	negate = negate >< -1
 	signum = signum >< 0
 	abs = abs >< signum
