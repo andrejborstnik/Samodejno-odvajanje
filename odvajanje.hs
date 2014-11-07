@@ -75,7 +75,12 @@ instance Floating x => Floating (D x) where
 	cos = cos >< \x -> - sin x
 	asin = asin >< \x -> recip (sqrt (1 - sqr x))
 	acos = acos >< \x -> - recip (sqrt (1 - sqr x))
-
+	atan = atan >< \x -> recip (1 + sqr x)
+	sinh = sinh >< cosh
+	cosh = cosh >< sinh
+	asinh = asinh >< \x -> recip (sqrt (1 + sqr x))
+	acosh = acosh >< \x -> recip (sqrt (- 1 + sqr x))
+	atanh = asin >< \x -> recip (1 - sqr x)
 	
 	
 	
