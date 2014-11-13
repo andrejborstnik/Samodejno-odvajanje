@@ -28,8 +28,11 @@ instance Floating b => Floating (a -> b) where
 	acosh = fmap acosh
 	atanh = fmap atanh
 
+data D a = D a a a
 
-data D a = D a a a deriving Show
+instance (Show a) => Show (D a) where
+	show (D a b c) = "D " ++ show a ++ " " ++ show b ++ " " ++ show c
+ 		--"In point " ++ show a ++ " the left limit of the provided function is " ++ show b ++ " and the right limit is " ++ show c ++ "."
 
 infix 0 ><
 (><) :: Num a => (a -> a) -> (a -> a) -> (D a -> D a)
@@ -44,19 +47,24 @@ idD x = D x 1 1
 sqr :: Num a => a -> a
 sqr a = a * a
 
-instance Num a => Num (D a) where
+instance (Num a, Eq a) => Num (D a) where
 	fromInteger = constD . fromInteger
 	D a al' ar' + D b bl' br' = D (a + b) (al' + bl') (ar' + br')
 	(D x xl' xr') * (D y yl' yr') = D (x * y) (xl' * y + yl' * x) (xr' * y + yr' * x)
 	negate = negate >< -1
 	signum = signum >< 0
-	abs = abs >< signum
+	abs x@(D 0 xl' xr') = D 0 (- abs xl') (abs xr') -- needed, because signum can (theoretically) have any value between -1 and 1 in 0
+	abs x = (abs >< signum) x
 
-instance Fractional a => Fractional (D a) where
+		-- abs x@(D y xl' xr') = 
+		-- if (y == fromInteger 0) then D 0 (- abs xl') (abs xr') 
+		-- else (abs >< signum) x
+	
+instance (Fractional a, Eq a) => Fractional (D a) where
 	fromRational = constD . fromRational
 	recip = recip >< -sqr recip
 
-instance Floating a => Floating (D a) where
+instance (Floating a, Eq a) => Floating (D a) where
 	pi = constD pi
 	exp = exp >< exp
 	log = log >< recip
@@ -76,10 +84,25 @@ instance Eq a => Eq (D a) where
 	(==) (D a _ _) (D b _ _) = (==) a b
 	
 instance Ord a => Ord (D a) where
-	(<=) (D a _ _) (D b _ _) = (<=) a b
+	min x@(D a al' ar') y@(D b bl' br')
+		| a < b || (al' > bl' && ar' < br') = x
+		| b < a || (bl' > al' && ar' > br') = y
+		| al' > bl' = D a al' br'
+		| otherwise = D a bl' ar'
+		
+	max x@(D a al' ar') y@(D b bl' br')
+		| a < b || (al' < bl' && ar' > br') = x
+		| b < a || (bl' < al' && ar' < br') = y
+		| al' < bl' = D a al' br'
+		| otherwise = D a bl' ar'
+			
+	-- (<=) (D a _ _) (D b _ _) = (<=) a b
 	
 f1 :: Floating a => a -> a
 f1 z = sqrt ((sqr z) * 3 * sin z)
 
 f2 :: (Ord a, Floating a) => a -> a
-f2 z = min (sin z) 0
+f2 z = min (min (sin (2*z)) 0) (min (-z) 0)
+
+f3 :: Floating a => a -> a
+f3 z = abs z

@@ -106,6 +106,9 @@ f1 z = sqrt ((sqr z) * 3 * sin z)
 
 f2 :: Floating a => a -> a
 f2 z = sqr z
+
+f3 :: Floating a => a -> a
+f3 z = abs z
 	
 -- data DD a b = DD b (LMap a b)
 
