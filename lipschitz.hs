@@ -40,12 +40,15 @@ infix 0 ><
 	d = f amax
 	e = f amin
 
+infinity :: Fractional a => a
+infinity = 1/0
+	
 -- how to simply create infinity? Replace Fractional back with Num when figured out.
 constL :: Fractional a => a -> L a
-constL x = L x 0 0 x x (1/0)
+constL x = L x 0 0 x x infinity
 
 idL :: Fractional a => a -> L a
-idL x = L x 1 1 (1/0) (-1/0) (1/0)
+idL x = L x 1 1 infinity (-infinity) infinity
 
 sqr :: Num a => a -> a
 sqr a = a * a
