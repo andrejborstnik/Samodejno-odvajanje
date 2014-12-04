@@ -35,34 +35,37 @@ instance (Show a) => Show (L a) where
 
 infix 0 ><
 (><) :: (Num a, Ord a) => (a -> a) -> (a -> a) -> (L a -> L a)
-(f >< f') (L a au al amax amin eps) = L (f a) (max (au * c) (al * c)) (min (al * c) (au * c)) (max d e) (min e d) eps where
+(f >< f') (L a au al amax amin eps) = L (f a) (max (au * c + c + au) (al * c + c + al)) (min (al * c + c + al) (au * c + c + au)) (max d e) (min e d) eps where
 	c = f' a
 	d = f amax
 	e = f amin
 
 infinity :: Fractional a => a
 infinity = 1/0
+
+con :: Fractional a => a
+con = 0.1
 	
 -- how to simply create infinity? Replace Fractional back with Num when figured out.
 constL :: Fractional a => a -> L a
-constL x = L x 0 0 x x infinity
+constL x = L x con (-con) (x + con) (x - con)  1
 
 idL :: Fractional a => a -> L a
-idL x = L x 1 1 infinity (-infinity) infinity
+idL x = L x (1 + con) (1 - con) (x + 1 + con) (x + 1 - con) 1
 
 sqr :: Num a => a -> a
 sqr a = a * a
 
--- it is beneficial to use points with same eps, because we lose the least precision
+-- it is beneficial to use points with the same eps, because we lose the least precision
 instance (Fractional a, Ord a) => Num (L a) where
 	fromInteger = constL . fromInteger
-	L a au al amax amin aeps + L b bu bl bmax bmin beps = L (a + b) (max au bu) (min al bl) (amax + bmax) (amin + bmin) (min aeps beps)
+	L a au al amax amin aeps + L b bu bl bmax bmin beps = L (a + b) (au + bu) (al + bl) (amax + bmax) (amin + bmin) (min aeps beps)
 	L a au al amax amin aeps * L b bu bl bmax bmin beps = 
 		L (a * b) (max (au * bu) (al * bl)) (min (al * bl) (min (al * bu) (au * bl))) (max (amax * bmax) (amin * bmin)) (min (amin * bmin) (min (amin * bmax) (amax * bmin))) (min aeps beps)
 	negate = negate >< -1
 	signum = signum >< 0
 	-- can abs be done better?
-	abs (L a au al amax amin aeps) = L 0 c (-c) d (-d) aeps  where
+	abs (L a au al amax amin aeps) = L (abs a) c (-c) d (-d) aeps  where
 		c = max (abs au) (abs al)
 		d = max (abs amax) (abs amin)
 	
@@ -87,7 +90,7 @@ instance (Floating a, Ord a) => Floating (L a) where
 	atanh = asin >< recip (1 - sqr)
 
 instance Eq a => Eq (L a) where
-	L a _ _ _ _ _ == L b _ _ _ _ _ = a == b
+	L a _ _ _ _ _ == L b _ _ _ _ _ = (a == b)
 	
 -- instance Ord a => Ord (L a) where
 	-- min x@(D a al' ar') y@(D b bl' br')
@@ -104,8 +107,8 @@ instance Eq a => Eq (L a) where
 			
 	-- (<=) (D a _ _) (D b _ _) = (<=) a b
 	
--- f1 :: Floating a => a -> a
--- f1 z = sqrt ((sqr z) * 3 * sin z)
+f1 :: Floating a => a -> a
+f1 z = z + z + z
 
 -- f2 :: (Ord a, Floating a) => a -> a
 -- f2 z = min (min (sin (2*z)) 0) (min (-z) 0)

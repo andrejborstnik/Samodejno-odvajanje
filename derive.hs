@@ -109,6 +109,9 @@ f2 z = sqr z
 
 f3 :: Floating a => a -> a
 f3 z = abs z
+
+f4 :: Floating a => a -> a
+f4 z = z
 	
 -- data DD a b = DD b (LMap a b)
 
