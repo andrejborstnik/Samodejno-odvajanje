@@ -28,14 +28,14 @@ instance Floating b => Floating (a -> b) where
 	acosh = fmap acosh
 	atanh = fmap atanh
 
-data L a = L a a a a a a -- point, upper lipschitz(on the right of the point), lower lipschitz, max value, min value, eps 
+data L a = L a a a a a a -- value, upper lipschitz(on the right of the point), lower lipschitz, max value, min value, eps 
 
 instance (Show a) => Show (L a) where
 	show (L a b c d e f) = "L " ++ show a ++ " " ++ show b ++ " " ++ show c ++ " " ++ show d ++ " " ++ show e ++ " " ++ show f
 
 infix 0 ><
 (><) :: (Num a, Ord a) => (a -> a) -> (a -> a) -> (L a -> L a)
-(f >< f') (L a au al amax amin eps) = L (f a) (max (au * c + c + au) (al * c + c + al)) (min (al * c + c + al) (au * c + c + au)) (max d e) (min e d) eps where
+(f >< f') (L a au al amax amin eps) = L (f a) (max (au + c) (al + c)) (min (al + c) (au + c)) (max d e) (min e d) eps where
 	c = f' a
 	d = f amax
 	e = f amin
@@ -44,7 +44,7 @@ infinity :: Fractional a => a
 infinity = 1/0
 
 con :: Fractional a => a
-con = 0.1
+con = 0.000000000000001
 	
 -- how to simply create infinity? Replace Fractional back with Num when figured out.
 constL :: Fractional a => a -> L a
@@ -61,17 +61,18 @@ instance (Fractional a, Ord a) => Num (L a) where
 	fromInteger = constL . fromInteger
 	L a au al amax amin aeps + L b bu bl bmax bmin beps = L (a + b) (au + bu) (al + bl) (amax + bmax) (amin + bmin) (min aeps beps)
 	L a au al amax amin aeps * L b bu bl bmax bmin beps = 
-		L (a * b) (max (au * bu) (al * bl)) (min (al * bl) (min (al * bu) (au * bl))) (max (amax * bmax) (amin * bmin)) (min (amin * bmin) (min (amin * bmax) (amax * bmin))) (min aeps beps)
-	negate = negate >< -1
+		L (a * b) (max (au * bu * eps + au * b + bu * a) (al * bl * eps + al * b + bl * a)) (min (al * bl * eps + al * b + bl * a) (min (al * bu * eps + al * b + bu * a) (au * bl * eps + au * b + bl * a))) (max (amax * bmax) (amin * bmin)) (min (amin * bmin) (min (amin * bmax) (amax * bmin))) eps where
+		eps = min aeps beps
+	negate (L a au al amax amin eps) = L (-a) (-al) (-au) (-amin) (-amax) eps
 	signum = signum >< 0
-	-- can abs be done better?
+	-- can abs be done better? Peopably not.
 	abs (L a au al amax amin aeps) = L (abs a) c (-c) d (-d) aeps  where
 		c = max (abs au) (abs al)
 		d = max (abs amax) (abs amin)
 	
 instance (Fractional a, Ord a) => Fractional (L a) where
 	fromRational = constL . fromRational
-	recip = recip >< -sqr recip
+	recip = recip >< - sqr recip
 
 instance (Floating a, Ord a) => Floating (L a) where
 	pi = constL pi
@@ -110,8 +111,23 @@ instance Eq a => Eq (L a) where
 f1 :: Floating a => a -> a
 f1 z = z + z + z
 
--- f2 :: (Ord a, Floating a) => a -> a
--- f2 z = min (min (sin (2*z)) 0) (min (-z) 0)
+f2 :: Floating a => a -> a
+f2 z = 3 * z
 
--- f3 :: Floating a => a -> a
--- f3 z = abs z
+f3 :: Floating a => a -> a
+f3 z = abs z
+
+f4 :: Floating a => a -> a
+f4 z = sqr (sin z)
+
+f5 :: Floating a => a -> a
+f5 z = 1 - sqr (cos z)
+
+f6 :: Floating a => a -> a
+f6 z = sin z
+
+f7 :: Floating a => a -> a
+f7 z = cos z
+
+f8 :: Floating a => a -> a
+f8 z = 1 - sqr (cos z)
