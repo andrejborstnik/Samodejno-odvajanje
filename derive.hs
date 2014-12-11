@@ -112,7 +112,27 @@ f3 z = abs z
 
 f4 :: Floating a => a -> a
 f4 z = z
+
+--Izpiše vrednost funkcije f ter prvih n odvodov v neki točki x.
+first_n :: Floating a => (D a -> D a) -> a -> Int -> [a]
+first_n f x n = (sez pomo n) where
+	pomo = f (D x (Just 1))
+--	sez :: Num b => D a -> b -> [a]
+ 	sez (D y _) 0 = y : []
+	sez (D y Nothing) _ = 0 : []
+	sez (D y (Just b)) m = y : sez b (m - 1)
+
+--Izpiše n-ti odvod funkcije f v točki x.
+nth :: Floating a => (D a -> D a) -> a -> Int -> a
+nth f x n = r where
+	s = first_n f x n
+	l = length s
+	r = if n > l then 0 else s!!n
 	
+	
+	
+
+
 -- data DD a b = DD b (LMap a b)
 
 -- instance Functor (DD a) where 
