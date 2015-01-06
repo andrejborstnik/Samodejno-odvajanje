@@ -51,15 +51,15 @@ eps :: Fractional a => a
 eps = 0.01
 
 -- how to simply create infinity? Replace Fractional back with Num when figured out.
-constL :: Fractional a => a -> L a
-constL x = L x con (-con) (x + con*eps) (x - con*eps) eps  
+constL :: Fractional a => a -> a -> a -> L a
+constL x con eps = L x con (-con) (x + con*eps) (x - con*eps) eps  
 
 sqr :: Num a => a -> a
 sqr a = a * a
 
 -- it is beneficial to use points with the same eps, because we lose the least precision
 instance (Fractional a, Ord a) => Num (L a) where
-	fromInteger = constL . fromInteger
+	fromInteger = (\x -> constL x con eps) . fromInteger
 	L a au al amax amin aeps + L b bu bl bmax bmin beps = L (a + b) (au + bu) (al + bl) (amax + bmax) (amin + bmin) (min aeps beps)
 	L a au al amax amin aeps * L b bu bl bmax bmin beps = 
 		L (a * b) (max (au * bu * eps + au * b + bu * a) (al * bl * eps + al * b + bl * a)) (min (al * bl * eps + al * b + bl * a) (min (al * bu * eps + al * b + bu * a) (au * bl * eps + au * b + bl * a))) (max (amax * bmax) (amin * bmin)) (min (amin * bmin) (min (amin * bmax) (amax * bmin))) eps where
@@ -72,11 +72,11 @@ instance (Fractional a, Ord a) => Num (L a) where
 		d = max (abs amax) (abs amin)
 	
 instance (Fractional a, Ord a) => Fractional (L a) where
-	fromRational = constL . fromRational
+	fromRational = (\x -> constL x con eps) . fromRational
 	recip = recip >< - sqr recip
 
 instance (Floating a, Ord a) => Floating (L a) where
-	pi = constL pi
+	pi = constL pi con eps
 	exp = exp >< exp
 	log = log >< recip
 	sqrt = sqrt >< recip (2 * sqrt)
@@ -93,21 +93,31 @@ instance (Floating a, Ord a) => Floating (L a) where
 
 instance Eq a => Eq (L a) where
 	L a _ _ _ _ _ == L b _ _ _ _ _ = (a == b)
+
+rread :: L a -> (a, a, a)
+rread (L a au al amax amin eps) = (a, au, al)
 	
--- instance Ord a => Ord (L a) where
-	-- min x@(D a al' ar') y@(D b bl' br')
-		-- | a < b || (al' > bl' && ar' < br') = x
-		-- | b < a || (bl' > al' && ar' > br') = y
-		-- | al' > bl' = D a al' br'
-		-- | otherwise = D a bl' ar'
-		
-	-- max x@(D a al' ar') y@(D b bl' br')
-		-- | a < b || (al' < bl' && ar' > br') = x
-		-- | b < a || (bl' < al' && ar' < br') = y
-		-- | al' < bl' = D a al' br'
-		-- | otherwise = D a bl' ar'
-			
-	-- (<=) (D a _ _) (D b _ _) = (<=) a b
+integral :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
+integral f a1 a2 h = if a2 <= a1 then 0 else a + integral f (a1 + h) a2 h where
+	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
+	(x, y, z) = rread (f (constL (a1 + interval) interval interval))
+	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
+	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
+	a = abs((zgornja + spodnja) / 2)
+	
+integralz :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
+integralz f a1 a2 h = if a2 <= a1 then 0 else a + integralz f (a1 + h) a2 h where
+	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
+	(x, y, z) = rread (f (constL (a1 + interval) interval interval))
+	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
+	a = abs(zgornja)
+
+integrals :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
+integrals f a1 a2 h = if a2 <= a1 then 0 else a + integrals f (a1 + h) a2 h where
+	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
+	(x, y, z) = rread (f (constL (a1 + interval) interval interval))
+	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
+	a = abs(spodnja)
 	
 f1 :: Floating a => a -> a
 f1 z = z + z + z
@@ -119,7 +129,7 @@ f3 :: Floating a => a -> a
 f3 z = abs z
 
 f4 :: Floating a => a -> a
-f4 z = sqr (sin z)
+f4 z = sqrt (sin z)
 
 f5 :: Floating a => a -> a
 f5 z = 1 - sqr (cos z)
