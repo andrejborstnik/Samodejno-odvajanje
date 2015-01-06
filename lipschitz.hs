@@ -67,6 +67,8 @@ sqr a = a * a
 instance (Fractional a, Ord a) => Num (L a) where
 	fromInteger = (\x -> constL x con eps) . fromInteger
 	L a au al aeps + L b bu bl beps = L (a + b) (au + bu) (al + bl) (min aeps beps)
+	
+	-- še za pregledat/popravit!!!
 	L a au al aeps * L b bu bl beps = 
 		L (a * b) (max (au * bu * eps + au * b + bu * a) (al * bl * eps + al * b + bl * a)) (min (al * bl * eps + al * b + bl * a) (min (al * bu * eps + al * b + bu * a) (au * bl * eps + au * b + bl * a))) eps where
 		eps = min aeps beps
