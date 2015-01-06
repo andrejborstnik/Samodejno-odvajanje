@@ -38,10 +38,10 @@ infix 0 ><
 (f >< f') (L a au al eps) = L v k1 k2 eps where
 	v = f a
 	c = f' a
-	leftvalue = f (a + eps)
+	leftvalue = f (a - eps)
 	leftup = (al + c)*(-eps) + v
 	leftdown = (au + c)*(-eps) + v
-	rightvalue = f (a - eps)
+	rightvalue = f (a + eps)
 	rightup = (au + c)*(eps) + v
 	rightdown = (al + c)*(eps) + v
 	k1 = max ((rightvalue - v)/eps) (max ((v - leftdown)/eps) ((v - leftvalue)/eps))
@@ -56,9 +56,8 @@ con = 0.01
 eps :: Fractional a => a
 eps = 0.01
 
--- how to simply create infinity? Replace Fractional back with Num when figured out.
 constL :: Fractional a => a -> a -> a -> L a
-constL x con eps = L x con (-con) (x + con*eps) (x - con*eps) eps  
+constL x con eps = L x con (-con) eps  
 
 sqr :: Num a => a -> a
 sqr a = a * a
@@ -68,15 +67,18 @@ instance (Fractional a, Ord a) => Num (L a) where
 	fromInteger = (\x -> constL x con eps) . fromInteger
 	L a au al aeps + L b bu bl beps = L (a + b) (au + bu) (al + bl) (min aeps beps)
 	
-	-- še za pregledat/popravit!!!
+	-- !!!!
 	L a au al aeps * L b bu bl beps = 
 		L (a * b) (max (au * bu * eps + au * b + bu * a) (al * bl * eps + al * b + bl * a)) (min (al * bl * eps + al * b + bl * a) (min (al * bu * eps + al * b + bu * a) (au * bl * eps + au * b + bl * a))) eps where
 		eps = min aeps beps
+		
 	negate (L a au al eps) = L (-a) (-al) (-au) eps
 	signum = signum >< 0
+	
+	abs (L a au al aeps) = L (abs a) ((signum a)*au) ((signum a)*al) aeps
 	-- can abs be done better? Propably not.
-	abs (L a au al aeps) = L (abs a) c (-c) aeps  where
-		c = max (abs au) (abs al)
+	-- abs (L a au al aeps) = L (abs a) c (-c) aeps  where
+		-- c = max (abs au) (abs al)
 	
 instance (Fractional a, Ord a) => Fractional (L a) where
 	fromRational = (\x -> constL x con eps) . fromRational
@@ -112,7 +114,6 @@ integral f a1 a2 h = if a2 <= a1 then 0 else a + integral f (a1 + h) a2 h where
 	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
 	a = abs((zgornja + spodnja) / 2)
 
-	
 integralz :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
 integralz f a1 a2 h = if a2 <= a1 then 0 else a + integralz f (a1 + h) a2 h where
 	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
@@ -127,11 +128,18 @@ integrals f a1 a2 h = if a2 <= a1 then 0 else a + integrals f (a1 + h) a2 h wher
 	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
 	a = abs(spodnja)
 	
+	
+	
+	
+	
+-- Ne dela?! Problem že pri f0
+f0 z = z
+
 f1 :: Floating a => a -> a
-f1 z = z + z + z
+f1 z = z+z+z + z + z
 
 f2 :: Floating a => a -> a
-f2 z = 3 * z
+f2 z = 5 * z
 
 f3 :: Floating a => a -> a
 f3 z = abs z
@@ -143,7 +151,7 @@ f5 :: Floating a => a -> a
 f5 z = 1 - sqr (cos z)
 
 f6 :: Floating a => a -> a
-f6 z = sin z
+f6 z = sin (5*z)
 
 f7 :: Floating a => a -> a
 f7 z = cos z
@@ -151,4 +159,4 @@ f7 z = cos z
 f8 :: Floating a => a -> a
 f8 z = 1 - sqr (cos z)
 
-f9 z = z*z
+f9 z = z*z*z*z - 5*z*z*z + 2*z*z - 1
