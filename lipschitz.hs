@@ -35,23 +35,24 @@ instance (Show a) => Show (L a) where
 
 infix 0 ><
 (><) :: (Num a, Ord a) => (a -> a) -> (a -> a) -> (L a -> L a)
-(f >< f') (L a au al amax amin eps) = L (f a) (max (au + c) (al + c)) (min (al + c) (au + c)) (max d e) (min e d) eps where
+(f >< f') (L a au al amax amin eps) = L (f a) (au + c) (al + c) (max d (max e g)) (min e (min g d)) eps where
 	c = f' a
 	d = f amax
 	e = f amin
+	g = f a
 
 infinity :: Fractional a => a
 infinity = 1/0
 
 con :: Fractional a => a
-con = 0.000000000000001
-	
+con = 0.01
+
+eps :: Fractional a => a
+eps = 0.01
+
 -- how to simply create infinity? Replace Fractional back with Num when figured out.
 constL :: Fractional a => a -> L a
-constL x = L x con (-con) (x + con) (x - con)  1
-
-idL :: Fractional a => a -> L a
-idL x = L x (1 + con) (1 - con) (x + 1 + con) (x + 1 - con) 1
+constL x = L x con (-con) (x + con*eps) (x - con*eps) eps  
 
 sqr :: Num a => a -> a
 sqr a = a * a
@@ -65,7 +66,7 @@ instance (Fractional a, Ord a) => Num (L a) where
 		eps = min aeps beps
 	negate (L a au al amax amin eps) = L (-a) (-al) (-au) (-amin) (-amax) eps
 	signum = signum >< 0
-	-- can abs be done better? Peopably not.
+	-- can abs be done better? Propably not.
 	abs (L a au al amax amin aeps) = L (abs a) c (-c) d (-d) aeps  where
 		c = max (abs au) (abs al)
 		d = max (abs amax) (abs amin)
@@ -131,3 +132,5 @@ f7 z = cos z
 
 f8 :: Floating a => a -> a
 f8 z = 1 - sqr (cos z)
+
+f9 z = z*z
