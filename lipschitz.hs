@@ -28,18 +28,24 @@ instance Floating b => Floating (a -> b) where
 	acosh = fmap acosh
 	atanh = fmap atanh
 
-data L a = L a a a a a a -- value, upper lipschitz(on the right of the point), lower lipschitz, max value, min value, eps 
+data L a = L a a a a -- value, upper lipschitz(on the right of the point), lower lipschitz, eps 
 
 instance (Show a) => Show (L a) where
-	show (L a b c d e f) = "L " ++ show a ++ " " ++ show b ++ " " ++ show c ++ " " ++ show d ++ " " ++ show e ++ " " ++ show f
+	show (L a b c d) = "L " ++ show a ++ " " ++ show b ++ " " ++ show c ++ " " ++ show d
 
 infix 0 ><
-(><) :: (Num a, Ord a) => (a -> a) -> (a -> a) -> (L a -> L a)
-(f >< f') (L a au al amax amin eps) = L (f a) (au + c) (al + c) (max d (max e g)) (min e (min g d)) eps where
+(><) :: (Fractional a, Ord a) => (a -> a) -> (a -> a) -> (L a -> L a)
+(f >< f') (L a au al eps) = L v k1 k2 eps where
+	v = f a
 	c = f' a
-	d = f amax
-	e = f amin
-	g = f a
+	leftvalue = f (a + eps)
+	leftup = (al + c)*(-eps) + v
+	leftdown = (au + c)*(-eps) + v
+	rightvalue = f (a - eps)
+	rightup = (au + c)*(eps) + v
+	rightdown = (al + c)*(eps) + v
+	k1 = max ((rightvalue - v)/eps) (max ((v - leftdown)/eps) ((v - leftvalue)/eps))
+	k2 = min ((rightvalue - v)/eps) (min ((rightdown - v)/eps) ((v - leftvalue)/eps))
 
 infinity :: Fractional a => a
 infinity = 1/0
@@ -50,9 +56,8 @@ con = 0.01
 eps :: Fractional a => a
 eps = 0.01
 
--- how to simply create infinity? Replace Fractional back with Num when figured out.
 constL :: Fractional a => a -> L a
-constL x = L x con (-con) (x + con*eps) (x - con*eps) eps  
+constL x = L x con (-con) eps  
 
 sqr :: Num a => a -> a
 sqr a = a * a
@@ -60,16 +65,15 @@ sqr a = a * a
 -- it is beneficial to use points with the same eps, because we lose the least precision
 instance (Fractional a, Ord a) => Num (L a) where
 	fromInteger = constL . fromInteger
-	L a au al amax amin aeps + L b bu bl bmax bmin beps = L (a + b) (au + bu) (al + bl) (amax + bmax) (amin + bmin) (min aeps beps)
-	L a au al amax amin aeps * L b bu bl bmax bmin beps = 
-		L (a * b) (max (au * bu * eps + au * b + bu * a) (al * bl * eps + al * b + bl * a)) (min (al * bl * eps + al * b + bl * a) (min (al * bu * eps + al * b + bu * a) (au * bl * eps + au * b + bl * a))) (max (amax * bmax) (amin * bmin)) (min (amin * bmin) (min (amin * bmax) (amax * bmin))) eps where
+	L a au al aeps + L b bu bl beps = L (a + b) (au + bu) (al + bl) (min aeps beps)
+	L a au al aeps * L b bu bl beps = 
+		L (a * b) (max (au * bu * eps + au * b + bu * a) (al * bl * eps + al * b + bl * a)) (min (al * bl * eps + al * b + bl * a) (min (al * bu * eps + al * b + bu * a) (au * bl * eps + au * b + bl * a))) eps where
 		eps = min aeps beps
-	negate (L a au al amax amin eps) = L (-a) (-al) (-au) (-amin) (-amax) eps
+	negate (L a au al eps) = L (-a) (-al) (-au) eps
 	signum = signum >< 0
 	-- can abs be done better? Propably not.
-	abs (L a au al amax amin aeps) = L (abs a) c (-c) d (-d) aeps  where
+	abs (L a au al aeps) = L (abs a) c (-c) aeps  where
 		c = max (abs au) (abs al)
-		d = max (abs amax) (abs amin)
 	
 instance (Fractional a, Ord a) => Fractional (L a) where
 	fromRational = constL . fromRational
@@ -92,7 +96,7 @@ instance (Floating a, Ord a) => Floating (L a) where
 	atanh = asin >< recip (1 - sqr)
 
 instance Eq a => Eq (L a) where
-	L a _ _ _ _ _ == L b _ _ _ _ _ = (a == b)
+	L a _ _ _  == L b _ _ _  = (a == b)
 	
 -- instance Ord a => Ord (L a) where
 	-- min x@(D a al' ar') y@(D b bl' br')
