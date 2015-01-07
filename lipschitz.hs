@@ -62,9 +62,6 @@ constL x con eps = L x con (-con) eps
 idL :: Fractional a => a -> a -> a -> L a
 idL x con eps = L x (1 + con) (1 - con) eps    
 
-idL :: Fractional a => a -> a -> a -> L a
-idL x con eps = L x (1 + con) (1 - con) eps 
-
 sqr :: Num a => a -> a
 sqr a = a * a
 
@@ -121,21 +118,21 @@ integral f a1 a2 h = if a2 <= a1 then 0 else a + integral f (a1 + h) a2 h where
 	(x, y, z) = rread (f (idL (a1 + interval) interval interval))
 	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
 	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
-	a = abs((zgornja + spodnja) / 2)
+	a = (zgornja + spodnja) / 2
 
 integralz :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
 integralz f a1 a2 h = if a2 <= a1 then 0 else a + integralz f (a1 + h) a2 h where
 	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
 	(x, y, z) = rread (f (idL (a1 + interval) interval interval))
 	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
-	a = abs(zgornja)
+	a = zgornja
 
 integrals :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
 integrals f a1 a2 h = if a2 <= a1 then 0 else a + integrals f (a1 + h) a2 h where
 	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
 	(x, y, z) = rread (f (idL (a1 + interval) interval interval))
 	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
-	a = abs(spodnja)
+	a = spodnja
 	
 	
 	
@@ -160,9 +157,6 @@ f4 z = cos(sqrt (sin z))
 f5 :: Floating a => a -> a
 f5 z = 1 - sqr (cos z)
 
-f6 :: (Floating a, Ord a) => L a -> L a
-f6 z = L x (y-1) (u-1) eps where
-	(x,y,u,eps) = rread1 (sqrt (sin (5*z)))
 
 f7 :: Floating a => a -> a
 f7 z = (cos z) * z
@@ -171,3 +165,9 @@ f8 :: Floating a => a -> a
 f8 z = 1 - sqr (cos z)
 
 f9 z = z*z*z*z - 5*z*z*z + 2*z*z - 1
+
+f10 :: Floating a => a -> a
+f10 z = exp z * sin z
+
+f11 :: Floating a => a -> a
+f11 z = sqr (sqr z) + 6 * (sqr z) * z + 2 * (sqr z) + 71

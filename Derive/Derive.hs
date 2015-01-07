@@ -162,6 +162,9 @@ f3 z = abs z
 
 f4 :: Floating a => a -> a
 f4 z = z
+
+f5 :: Floating a => a -> a
+f5 z = exp z / z + 2 * (sqr z) * (sin z)
 	
 	
 	

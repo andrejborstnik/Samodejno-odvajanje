@@ -129,3 +129,6 @@ f2 z = min (min (sin (2*z)) 0) (min (-z) 0)
 
 f3 :: Floating a => a -> a
 f3 z = abs z
+
+f4 :: (Floating a, Ord a) => a -> a
+f4 z = min (sin z) 0
