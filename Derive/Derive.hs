@@ -20,9 +20,10 @@ module Derive
 )
 where
 
+
 import Control.Applicative
 
--- |Vrednost in odvode bomo predstavili s tipom @D@.
+-- |Vrednost funkcije in njene odvode v neki točki bomo predstavili s tipom @D@.
 data D a = D a (Maybe (D a))
 
 -- |
@@ -83,7 +84,7 @@ infixl 7 *&
 Nothing *& _ = Nothing
 Just a *& b = Just (a * b)
 
--- |Definiramo uporabo funkcije na tipu @D@.
+-- |Definiramo uporabo funkcij na tipu @D@.
 infix 0 ><
 (><) :: Num a => (a -> a) -> (D a -> D a) -> (D a -> D a)
 (f >< f') a@(D a0 a') = D (f a0) (a' *& f' a)
@@ -162,94 +163,3 @@ f3 z = abs z
 
 f4 :: Floating a => a -> a
 f4 z = z
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-
--- data DD a b = DD b (LMap a b)
-
--- instance Functor (DD a) where 
-	-- fmap g = g >< d g
-
--- class Functor f => Applicative f where
-	-- pure :: a -> f a
-	-- (<*>) :: f (a -> b) -> f a -> f b
-
--- class Monodial f where
-	-- unit :: f ()
-	-- zipp :: f a -> f b -> f (a, b)
-	
--- (><) :: (Vector s u, Vector s v, Vector s w) => (v -> w) -> (v -> (LMap v w)) -> (DD u v) -> (DD u w)
--- g >< dg (D fx dfx) = D (g fx) (dg fx) compose dfx
--- class AdditiveGroup v where
-	-- zero :: v
-	-- (+++) :: v -> v -> v
-	-- negateg :: v -> v
-
--- class AdditiveGroup v => Vector s v where
-	-- (***) :: s -> v -> v
-	
--- class Vector s v => InnerSpace s v where
-	-- (<*>) :: v -> v -> s
-	
--- instance AdditiveGroup v => AdditiveGroup (a -> v) where
-	-- zero = pure zero
-	-- (+++) = liftA2 (+++)
-	-- negateg = fmap negate
-
--- instance Vector s v => Vector s (a -> v) where
-	-- (***) s = fmap (s ***)
-
--- newtype LMap u v = LMap (u -> v) deriving (AdditiveGroup, Vector)
-
--- linear :: (Vector a u, Vector s u) => (u -> v) -> (LMap u v)
--- lapply :: (Vector s u, Vector s v) => (LMap u v) -> (u -> v)
--- idL :: (Vector s u) => LMap u u
--- compose :: (Vector s u, Vector s v) => (LMap v w) -> (LMap u v) -> (LMap u w)
--- join :: (Vector s u, Vector s v, Vector s w) => (LMap u w) -> (LMap v w) -> (LMap (u,v) w)
--- zipp :: (LMap w u) -> (LMap w v) -> (LMap w (u,v))
-
--- instance Monodial ((->) a) where
-	-- unit = const ()
-	-- f zipp g = \x -> (f x, g x)
-
--- instance Applicative ((->) a) where
-	-- pure a = fmap (const a) unit
-	-- fs <*> xs = fmap app (fs zipp sx) where
-		-- app :: (a -> b, a) -> b
-		-- app (f, x) = f x
-
--- unit = D () 0
-
--- d :: (Vector s u, Vector s v) => (u -> v) -> (u -> (LMap u v))
--- d unit = const 0
--- d (f zipp g) = d f (liftA2 zipp) d g
-
-	
-	
