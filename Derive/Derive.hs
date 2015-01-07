@@ -20,9 +20,10 @@ module Derive
 )
 where
 
+
 import Control.Applicative
 
--- |Vrednost in odvode bomo predstavili s tipom @D@.
+-- |Vrednost funkcije in njene odvode v neki točki bomo predstavili s tipom @D@.
 data D a = D a (Maybe (D a))
 
 -- |
@@ -83,7 +84,7 @@ infixl 7 *&
 Nothing *& _ = Nothing
 Just a *& b = Just (a * b)
 
--- |Definiramo uporabo funkcije na tipu @D@.
+-- |Definiramo uporabo funkcij na tipu @D@.
 infix 0 ><
 (><) :: Num a => (a -> a) -> (D a -> D a) -> (D a -> D a)
 (f >< f') a@(D a0 a') = D (f a0) (a' *& f' a)
@@ -253,6 +254,3 @@ f5 z = exp z / z + 2 * (sqr z) * (sin z)
 -- d :: (Vector s u, Vector s v) => (u -> v) -> (u -> (LMap u v))
 -- d unit = const 0
 -- d (f zipp g) = d f (liftA2 zipp) d g
-
-	
-	
