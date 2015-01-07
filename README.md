@@ -7,6 +7,8 @@ Prvotno bi naj najin projekt obsegal implementacijo samodejnega odvajanja. Skozi
 ##Samodejno odvajanje
 Pojma samodejno odvajanje ne smemo zamenjati s pojmoma *simbolično odvajanje* in *numerično odvajanje*. Pri samodejnem odvajanju iskoristimo dejstvo, da je vsaka funkcija sestavljena iz osnovnih aritmetičnih operacij ter elementarnih funkcij (exp, log, sin, cos itd.). Z uporabo verižnega pravila tako lahko samodejno izračunamo odvod poljubnega reda v neki točki.
 
+Vrednost funkcije in njene odvode v neki točki bomo predstavili s tipom *D*: *data D a = D a (Maybe (D a))*.
+
 ##Levi in desni odvodi
 
 
