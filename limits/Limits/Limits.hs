@@ -1,3 +1,20 @@
+{-|
+Module      : Limits
+Description :  Levi in desni odvodi (neodvedljivih) funkcij
+Copyright   : (c) Andrej Borštnik, Barbara Bajcer, 2015
+Maintainer  : barbara.bajcer@gmail.com, andrej-borstnik@hotmail.com
+Stability   : experimental 
+
+-}
+
+module Limits.Limits
+( D(..)
+, constD
+, idD
+, sqr
+)
+where
+
 import Control.Applicative
 
 instance Num b => Num (a -> b) where
@@ -28,24 +45,30 @@ instance Floating b => Floating (a -> b) where
 	acosh = fmap acosh
 	atanh = fmap atanh
 
+-- |Struktura D predstavlja točko ter levi in desni odvod v njej.
 data D a = D a a a
 
 instance (Show a) => Show (D a) where
 	show (D a b c) = "D " ++ show a ++ " " ++ show b ++ " " ++ show c
- 		--"In point " ++ show a ++ " the left limit of the provided function is " ++ show b ++ " and the right limit is " ++ show c ++ "."
+ 		--"V točki " ++ show a ++ " je leva limita funkcije enaka " ++ show b ++ " in desna " ++ show c ++ "."
 
+-- |Izračuna vrednost in leve/desne odvode funkcije f v točki a, kjer je f' odvod f.
 infix 0 ><
 (><) :: Num a => (a -> a) -> (a -> a) -> (D a -> D a)
 (f >< f') (D a al' ar') = D (f a) (al' * f' a) (ar' * f' a)
 
+-- |@constD@ preslika numeral Num v točko (konstanto).
 constD :: Num a => a -> D a
 constD x = D x 0 0
 
+-- |Identična funkcija.
 idD :: Num a => a -> D a
 idD x = D x 1 1
 
+-- |Funkcija kvadriranja.
 sqr :: Num a => a -> a
 sqr a = a * a
+
 
 instance (Num a, Eq a) => Num (D a) where
 	fromInteger = constD . fromInteger

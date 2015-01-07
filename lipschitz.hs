@@ -35,7 +35,7 @@ instance (Show a) => Show (L a) where
 
 infix 0 ><
 (><) :: (Fractional a, Ord a) => (a -> a) -> (a -> a) -> (L a -> L a)
-(f >< f') (L a au al eps) = L v k1 k2 eps where
+(f >< f') (L a au al eps) = L v (au + c) (al + c) eps where
 	v = f a
 	c = f' a
 	leftvalue = f (a - eps)
@@ -57,7 +57,10 @@ eps :: Fractional a => a
 eps = 0.01
 
 constL :: Fractional a => a -> a -> a -> L a
-constL x con eps = L x con (-con) eps  
+constL x con eps = L x con (-con) eps
+
+idL :: Fractional a => a -> a -> a -> L a
+idL x con eps = L x (1 + con) (1 - con) eps    
 
 sqr :: Num a => a -> a
 sqr a = a * a
@@ -105,11 +108,14 @@ instance Eq a => Eq (L a) where
 
 rread :: L a -> (a, a, a)
 rread (L a au al eps) = (a, au, al)
+
+rread1 :: L a -> (a, a, a, a)
+rread1 (L a au al eps) = (a, au, al, eps)
 	
 integral :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
 integral f a1 a2 h = if a2 <= a1 then 0 else a + integral f (a1 + h) a2 h where
 	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
-	(x, y, z) = rread (f (constL (a1 + interval) interval interval))
+	(x, y, z) = rread (f (idL (a1 + interval) interval interval))
 	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
 	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
 	a = abs((zgornja + spodnja) / 2)
@@ -117,14 +123,14 @@ integral f a1 a2 h = if a2 <= a1 then 0 else a + integral f (a1 + h) a2 h where
 integralz :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
 integralz f a1 a2 h = if a2 <= a1 then 0 else a + integralz f (a1 + h) a2 h where
 	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
-	(x, y, z) = rread (f (constL (a1 + interval) interval interval))
+	(x, y, z) = rread (f (idL (a1 + interval) interval interval))
 	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
 	a = abs(zgornja)
 
 integrals :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
 integrals f a1 a2 h = if a2 <= a1 then 0 else a + integrals f (a1 + h) a2 h where
 	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
-	(x, y, z) = rread (f (constL (a1 + interval) interval interval))
+	(x, y, z) = rread (f (idL (a1 + interval) interval interval))
 	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
 	a = abs(spodnja)
 	
@@ -133,6 +139,7 @@ integrals f a1 a2 h = if a2 <= a1 then 0 else a + integrals f (a1 + h) a2 h wher
 	
 	
 -- Ne dela?! Problem že pri f0
+f0 :: Floating a => a -> a
 f0 z = z
 
 f1 :: Floating a => a -> a
@@ -142,7 +149,7 @@ f2 :: Floating a => a -> a
 f2 z = 5 * z
 
 f3 :: Floating a => a -> a
-f3 z = abs z
+f3 z = sin (5 * z)
 
 f4 :: Floating a => a -> a
 f4 z = sqrt (sin z)
@@ -150,11 +157,12 @@ f4 z = sqrt (sin z)
 f5 :: Floating a => a -> a
 f5 z = 1 - sqr (cos z)
 
-f6 :: Floating a => a -> a
-f6 z = sin (5*z)
+f6 :: (Floating a, Ord a) => L a -> L a
+f6 z = L x (y-1) (u-1) eps where
+	(x,y,u,eps) = rread1 (sqrt (sin (5*z)))
 
 f7 :: Floating a => a -> a
-f7 z = cos z
+f7 z = (cos z) * z
 
 f8 :: Floating a => a -> a
 f8 z = 1 - sqr (cos z)
