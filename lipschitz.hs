@@ -39,11 +39,11 @@ infix 0 ><
 	v = f a
 	c = f' a
 	leftvalue = f (a - eps)
-	leftup = (al + c)*(-eps) + v
-	leftdown = (au + c)*(-eps) + v
+	leftup = (al-1 + c)*(-eps) + v
+	leftdown = (au -1+ c)*(-eps) + v
 	rightvalue = f (a + eps)
-	rightup = (au + c)*(eps) + v
-	rightdown = (al + c)*(eps) + v
+	rightup = (au-1 + c)*(eps) + v
+	rightdown = (al -1+ c)*(eps) + v
 	k1 = max ((rightvalue - v)/eps) (max ((v - leftdown)/eps) ((v - leftvalue)/eps))
 	k2 = min ((rightvalue - v)/eps) (min ((rightdown - v)/eps) ((v - leftvalue)/eps))
 
@@ -58,6 +58,9 @@ eps = 0.01
 
 constL :: Fractional a => a -> a -> a -> L a
 constL x con eps = L x con (-con) eps  
+
+idL :: Fractional a => a -> a -> a -> L a
+idL x con eps = L x (1 + con) (1 - con) eps 
 
 sqr :: Num a => a -> a
 sqr a = a * a
@@ -75,10 +78,10 @@ instance (Fractional a, Ord a) => Num (L a) where
 	negate (L a au al eps) = L (-a) (-al) (-au) eps
 	signum = signum >< 0
 	
-	abs (L a au al aeps) = L (abs a) ((signum a)*au) ((signum a)*al) aeps
+	-- abs (L a au al aeps) = L (abs a) ((signum a)*au) ((signum a)*al) aeps
 	-- can abs be done better? Propably not.
-	-- abs (L a au al aeps) = L (abs a) c (-c) aeps  where
-		-- c = max (abs au) (abs al)
+	abs (L a au al aeps) = L (abs a) c (-c) aeps  where
+		c = max (abs au) (abs al)
 	
 instance (Fractional a, Ord a) => Fractional (L a) where
 	fromRational = (\x -> constL x con eps) . fromRational
@@ -145,7 +148,7 @@ f3 :: Floating a => a -> a
 f3 z = abs z
 
 f4 :: Floating a => a -> a
-f4 z = sqrt (sin z)
+f4 z = cos(sqrt (sin z))
 
 f5 :: Floating a => a -> a
 f5 z = 1 - sqr (cos z)
