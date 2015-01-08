@@ -1,0 +1,9 @@
+\frametitle{}
+\includegraphics[width=8cm]{graf4.png}
+
+\pause
+Haskell:
+\begin{verbatim}
+h (idD 0)
+D 0.0 1.0 0.0
+\end{verbatim}

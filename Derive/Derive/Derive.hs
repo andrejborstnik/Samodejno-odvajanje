@@ -161,7 +161,11 @@ f4 z = z
 f5 :: Floating a => a -> a
 f5 z = exp z / z + 2 * (sqr z) * (sin z)
 	
-	
+f6 :: Floating a => a -> a
+f6 z = (sqr z) * (sqr z) * (sqr z)
+
+f7 :: Floating a => a -> a
+f7 z = sin (sqr z)
 	
 	
 	
