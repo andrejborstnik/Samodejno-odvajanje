@@ -114,7 +114,7 @@ D 0.0 1.0 0.0
 Lipschitzeva funkcija: $\exists C\geq 0: |f(x)-f(y)|\leq C|x-y|, \forall x,y$ \pause
 
 \vspace{10mm}
-Lokalno: $C_1|x-y|\leq|f(x)-f(y)|\leq C_2|x-y|, \forall x,y \in [a-eps, a+eps]$
+Lokalno v točki $a$: $C_1|x-y|\leq|f(x)-f(y)|\leq C_2|x-y|, \forall x,y \in [a-eps, a+eps]$
 \end{frame}
 
 
@@ -140,7 +140,7 @@ N[Integrate[f[x], {x, -1, 1}], 15]
 \end{verbatim}
 \pause
 \vspace{7mm}
-\item Haskell:
+\item Haskell: korak = 0.0001
 \begin{verbatim}
 zgornja meja = 0.6635009523819319
 
@@ -178,7 +178,7 @@ N[Integrate[g[x], {x, -5, 5}], 15]
 \end{verbatim}
 \pause
 \vspace{7mm}
-\item Haskell:
+\item Haskell: korak = 0.0001
 \begin{verbatim}
 zgornja meja = 2128.700864620524
 

@@ -7,7 +7,7 @@ N[Integrate[g[x], {x, -5, 5}], 15]
 \end{verbatim}
 \pause
 \vspace{7mm}
-\item Haskell:
+\item Haskell: korak = 0.0001
 \begin{verbatim}
 zgornja meja = 2128.700864620524
 
