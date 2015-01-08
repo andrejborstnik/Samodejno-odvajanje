@@ -5,6 +5,7 @@ Copyright   : (c) Andrej Borštnik, Barbara Bajcer, 2015
 Maintainer  : barbara.bajcer@gmail.com, andrej-borstnik@hotmail.com
 Stability   : experimental 
 
+Samodejno računanje vrednosti funkcije ter levih in desnih odvodov v dani točki.
 -}
 
 module Limits.Limits
@@ -65,7 +66,7 @@ constD x = D x 0 0
 idD :: Num a => a -> D a
 idD x = D x 1 1
 
--- |Funkcija kvadriranja.
+-- |
 sqr :: Num a => a -> a
 sqr a = a * a
 

@@ -1,3 +1,28 @@
+{-|
+Module      : Lipschitz
+Description :  Omejitev funkcij z premicami (koeficientom pravimo Lipschitzove konstante)
+Copyright   : (c) Andrej Borštnik, Barbara Bajcer, 2015
+Maintainer  : barbara.bajcer@gmail.com, andrej-borstnik@hotmail.com
+Stability   : experimental 
+
+Računanje vrednosti funkcije in konstant, ki lokalno omejujejo to funkcijo.
+-}
+
+module Lipschitz.Lipschitz
+( L(..)
+, constL
+, idL
+, sqr
+, integralR
+, integralRz
+, integralRs
+, integralF
+, integralFz
+, integralFs
+)
+where
+
+
 import Control.Applicative
 
 instance Num b => Num (a -> b) where
@@ -28,7 +53,8 @@ instance Floating b => Floating (a -> b) where
 	acosh = fmap acosh
 	atanh = fmap atanh
 
-data L a = L a a a a -- value, upper lipschitz(on the right of the point), lower lipschitz, eps 
+-- |Struktura L predstavlja točko, zgornjo konstanto (desno od točke), levo konstanto ter okolico, kjer premici omejujeta funkcijo.
+data L a = L a a a a
 
 instance (Show a) => Show (L a) where
 	show (L a b c d) = "L " ++ show a ++ " " ++ show b ++ " " ++ show c ++ " " ++ show d
@@ -56,12 +82,15 @@ con = 0.01
 eps :: Fractional a => a
 eps = 0.01
 
+-- |@constL@ je konstantna fukncija.
 constL :: Fractional a => a -> a -> a -> L a
 constL x con eps = L x con (-con) eps
 
+-- | @idL@ je identična funkcija.
 idL :: Fractional a => a -> a -> a -> L a
 idL x con eps = L x (1 + con) (1 - con) eps    
 
+-- |
 sqr :: Num a => a -> a
 sqr a = a * a
 
@@ -111,34 +140,61 @@ rread (L a au al eps) = (a, au, al)
 
 rread1 :: L a -> (a, a, a, a)
 rread1 (L a au al eps) = (a, au, al, eps)
-	
-integral :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
-integral f a1 a2 h = if a2 <= a1 then 0 else a + integral f (a1 + h) a2 h where
+
+-- |Izračuna približek za določeni integral podane racionalne funkcije z korakom h.
+integralR :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
+integralR f a1 a2 h = if a2 <= a1 then 0 else a + integralR f (a1 + h) a2 h where
 	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
 	(x, y, z) = rread (f (idL (a1 + interval) interval interval))
 	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
 	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
 	a = (zgornja + spodnja) / 2
 
-integralz :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
-integralz f a1 a2 h = if a2 <= a1 then 0 else a + integralz f (a1 + h) a2 h where
+-- |Izračuna (približno) zgornjo mejo za določeni integral podane racionalne funkcije z korakom h.
+integralRz :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
+integralRz f a1 a2 h = if a2 <= a1 then 0 else a + integralRz f (a1 + h) a2 h where
 	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
 	(x, y, z) = rread (f (idL (a1 + interval) interval interval))
 	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
 	a = zgornja
 
-integrals :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
-integrals f a1 a2 h = if a2 <= a1 then 0 else a + integrals f (a1 + h) a2 h where
+-- |Izračuna (približno) spodnjo mejo za določeni integral podane racionalne funkcije z korakom h.
+integralRs :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
+integralRs f a1 a2 h = if a2 <= a1 then 0 else a + integralRs f (a1 + h) a2 h where
 	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
 	(x, y, z) = rread (f (idL (a1 + interval) interval interval))
+	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
+	a = spodnja
+
+-- |Izračuna približek za določeni integral podane Floating funkcije z korakom h.
+integralF :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
+integralF f a1 a2 h = if a2 <= a1 then 0 else a + integralF f (a1 + h) a2 h where
+	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
+	(x, y, z) = rread (f (constL (a1 + interval) interval interval))
+	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
+	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
+	a = (zgornja + spodnja) / 2
+
+-- |Izračuna (približno) zgornjo mejo za določeni integral podane Floating funkcije z korakom h.
+integralFz :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
+integralFz f a1 a2 h = if a2 <= a1 then 0 else a + integralFz f (a1 + h) a2 h where
+	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
+	(x, y, z) = rread (f (constL (a1 + interval) interval interval))
+	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
+	a = zgornja
+
+-- |Izračuna (približno) spodnjo mejo za določeni integral podane Floating funkcije z korakom h.
+integralFs :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
+integralFs f a1 a2 h = if a2 <= a1 then 0 else a + integralFs f (a1 + h) a2 h where
+	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
+	(x, y, z) = rread (f (constL (a1 + interval) interval interval))
 	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
 	a = spodnja
 	
 	
 	
 	
-	
--- Ne dela?! Problem že pri f0
+
 f0 :: Floating a => a -> a
 f0 z = z
 

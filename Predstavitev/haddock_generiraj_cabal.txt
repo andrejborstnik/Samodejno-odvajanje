@@ -2,4 +2,5 @@ pojdi tja, kjer je: imedat.hs
 vtipkaj: haddock -h -o ./doc imedat.hs
 Sedaj je zgenerirana dokumendatija.
 Pojdi kjer bo cabal paket (verjetno cd ..).
-Vtipkaj: cabal build. Èe še nikoli pred tem nisi, vtipkaj cabal init in še cabal config.
+Èe še nikoli pred tem nisi, vtipkaj cabal init. 
+Vtipkaj: cabal build. 

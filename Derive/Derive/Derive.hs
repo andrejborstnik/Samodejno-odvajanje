@@ -7,14 +7,11 @@ Stability   : experimental
 
 Samodejno računanje vrednosti funkcije in njenih odvodov v dani točki.
 -}
-module Derive
+module Derive.Derive
 ( D(..)
 , constD
 , idD
-, (+&)
-, (*&)
 , sqr
-, (><) 
 , first_n
 , nth
 )
@@ -71,20 +68,17 @@ constD x = D x Nothing
 idD :: Num a => a -> D a
 idD x = D x (Just 1)
 
--- |Definiramo seštevanje za tip @Maybe@.
 infixl 6 +&
 (+&) :: Num a => Maybe a -> Maybe a -> Maybe a
 Nothing +& b = b
 a +& Nothing = a
 Just a +& Just b = Just (a + b)
 
--- |Definiramo množenje za tip @Maybe@.
 infixl 7 *&
 (*&) :: Num a => Maybe a -> a -> Maybe a
 Nothing *& _ = Nothing
 Just a *& b = Just (a * b)
 
--- |Definiramo uporabo funkcij na tipu @D@.
 infix 0 ><
 (><) :: Num a => (a -> a) -> (D a -> D a) -> (D a -> D a)
 (f >< f') a@(D a0 a') = D (f a0) (a' *& f' a)
