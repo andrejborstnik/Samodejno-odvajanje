@@ -38,13 +38,13 @@ Uporaba je enaka, kot pri samodejnem odvajanju, le rezultat je drugačen. Za odv
 ##Lipschitzove konstante
 Ideja: funkcijo lokalno omejimo z dvema premicama (predstavljenima s koeficientoma) in definiramo aritmetiko. S tem lahko tudi zapletenejše funkcije (lokalno) omejimo in tako jih na primer lahko integriramo.
 
-Funkcija, v kateri evaluiramo točko je lahko poljubno blizu pola, torej bi premici rezultat omejevali samo na poljubno majhni okolici. Torej je omejevanje smiselno samo za okolice, ki so zelo blizu 0. Ob tej predpostavki sva aritmetiko definirala brez težav, se pa zalomi pri aplikaciji. 
+Funkcija, v kateri evaluiramo točko je lahko poljubno blizu pola, torej bi premici rezultat omejevali samo na poljubno majhni okolici. Sledi, da je omejevanje smiselno samo za okolice, ki so zelo blizu 0. Ob tej predpostavki sva aritmetiko definirala brez težav, se pa zalomi pri aplikaciji. 
 
 Za funkcijo `f z = z` pričakujemo, da bo omejena npr. s konstantama `1 - eps` in `1 + eps`. S tako definicijo pokrijemo vse racionalne funkcije. Prav tako za funkcijo `f z = sin z` pričakujemo, da bo omejena z `coz z - eps` in `cos z + eps`. Tu se pojavi težava v implementaciji, ki je nisva uspela razrešiti. Program namreč ne ve kakšo vrsto aplikacije opravlja in tako vrača napačne rezultate, če apliciramo kako funkcijo iz `Floating` instance na racionalni funkciji (ki ni konstanta).
 
-Vrednost funkcije, omejujoči konsanti in okolico predstavimo s strukturo `L: L a = L a a a a`. Struktura `L 0 1 -1 0.1` predstavlja nekaj, kar ima v neki točki vrednost 0 in v 0.1 okolici zgornjo konstanto (desno od točke) 1 ter levo konstanto -1.
+Vrednost funkcije, omejujoči konsanti in okolico predstavimo s strukturo `L: L a = L a a a a`. Struktura `L 0 1 -1 0.1` predstavlja nekaj, kar ima v neki točki vrednost 0 in v 0.1 okolici zgornjo konstanto (desno od točke) 1 ter spodnjo konstanto -1.
 
-Uporaba (je različna za racionalne in floating funkcije), `eps` pove kakšna je okolica, `con` pa kako blizu
+Uporaba (je različna za racionalne in `Floating` funkcije), `eps` pove kakšna je okolica, `con` pa kako blizu
 1 oz. 0 postavimo začetni omejitvi:
 ```haskell
 f1 :: Floating a => a -> a
