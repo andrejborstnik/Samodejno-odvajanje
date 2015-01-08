@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2014.6.20)  8 JAN 2015 10:44
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2014.6.20)  8 JAN 2015 13:24
 entering extended mode
 **U:/Faks/PD/FP/Samodejno*odvajanje/Rep/Predstavitev/beamer.tex
 ("U:/Faks/PD/FP/Samodejno odvajanje/Rep/Predstavitev/beamer.tex"
@@ -1310,24 +1310,109 @@ LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <5> not available
 ] [19
 
 ]
+("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.vrb"
+<graf5.png, id=561, 480.29437pt x 387.69844pt>
+File: graf5.png Graphic file (type png)
+ <use graf5.png>
+Package pdftex.def Info: graf5.png used on input line 1.
+(pdftex.def)             Requested size: 284.52756pt x 229.67477pt.
+) [20
+
+ <U:/Faks/PD/FP/Samodejno odvajanje/Rep/Predstavitev/graf5.png>]
+("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.vrb"
+<graf6.png, id=589, 575.90157pt x 293.59688pt>
+File: graf6.png Graphic file (type png)
+ <use graf6.png>
+Package pdftex.def Info: graf6.png used on input line 5.
+(pdftex.def)             Requested size: 355.65944pt x 181.32034pt.
+)
+Overfull \hbox (9.95956pt too wide) in paragraph at lines 5--131
+[][][]  
+ []
+
+[21
+
+ <U:/Faks/PD/FP/Samodejno odvajanje/Rep/Predstavitev/graf6.png>]
+("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.vrb"
+File: graf6.png Graphic file (type png)
+
+<use graf6.png>
+Package pdftex.def Info: graf6.png used on input line 5.
+(pdftex.def)             Requested size: 355.65944pt x 181.32034pt.
+)
+Overfull \hbox (9.95956pt too wide) in paragraph at lines 5--131
+[][][]  
+ []
+
+[22
+
+] ("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.vrb") [23
+
+]
+("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.vrb") [24
+
+]
+("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.vrb"
+<graf7.png, id=698, 465.99094pt x 381.67593pt>
+File: graf7.png Graphic file (type png)
+ <use graf7.png>
+Package pdftex.def Info: graf7.png used on input line 1.
+(pdftex.def)             Requested size: 284.52756pt x 233.05493pt.
+) [25
+
+ <U:/Faks/PD/FP/Samodejno odvajanje/Rep/Predstavitev/graf7.png>]
+("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.vrb"
+<graf8.png, id=727, 606.76688pt x 295.1025pt>
+File: graf8.png Graphic file (type png)
+ <use graf8.png>
+Package pdftex.def Info: graf8.png used on input line 5.
+(pdftex.def)             Requested size: 355.65944pt x 172.97873pt.
+)
+Overfull \hbox (9.95956pt too wide) in paragraph at lines 5--169
+[]  
+ []
+
+[26
+
+ <U:/Faks/PD/FP/Samodejno odvajanje/Rep/Predstavitev/graf8.png>]
+("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.vrb"
+<graf9.png, id=756, 624.83438pt x 296.60812pt>
+File: graf9.png Graphic file (type png)
+ <use graf9.png>
+Package pdftex.def Info: graf9.png used on input line 6.
+(pdftex.def)             Requested size: 355.65944pt x 168.83304pt.
+)
+Overfull \hbox (9.95956pt too wide) in paragraph at lines 6--169
+[]  
+ []
+
+[27
+
+ <U:/Faks/PD/FP/Samodejno odvajanje/Rep/Predstavitev/graf9.png>]
+("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.vrb") [28
+
+]
+("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.vrb") [29
+
+]
 \tf@nav=\write6
 \tf@toc=\write7
 \tf@snm=\write8
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 122.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 122.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 206.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 206.
 
 ("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.aux")
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 122.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 122.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 206.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 206.
 Package rerunfilecheck Info: File `beamer.out' has not changed.
 (rerunfilecheck)             Checksum: D1FC0AC0A21942CD84414F4ACFECB787;169.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 122.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 206.
  ) 
 Here is how much of TeX's memory you used:
- 17630 strings out of 493706
- 330911 string characters out of 3146992
+ 17732 strings out of 493706
+ 333486 string characters out of 3146992
  412035 words of memory out of 3000000
- 20415 multiletter control sequences out of 15000+200000
+ 20472 multiletter control sequences out of 15000+200000
  41988 words of font info for 43 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
  56i,17n,55p,438b,571s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1339,9 +1424,9 @@ m/lmss10.pfb><C:/Programi/MiKTeX2.9/fonts/type1/public/lm/lmss8.pfb><C:/Program
 i/MiKTeX2.9/fonts/type1/public/lm/lmss9.pfb><C:/Programi/MiKTeX2.9/fonts/type1/
 public/lm/lmsso9.pfb><C:/Programi/MiKTeX2.9/fonts/type1/public/lm/lmsy9.pfb><C:
 /Programi/MiKTeX2.9/fonts/type1/public/lm/lmtt9.pfb>
-Output written on beamer.pdf (19 pages, 313171 bytes).
+Output written on beamer.pdf (29 pages, 431106 bytes).
 PDF statistics:
- 599 PDF objects out of 1000 (max. 8388607)
- 42 named destinations out of 1000 (max. 500000)
- 87 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 879 PDF objects out of 1000 (max. 8388607)
+ 62 named destinations out of 1000 (max. 500000)
+ 112 words of extra memory for PDF output out of 10000 (max. 10000000)
 

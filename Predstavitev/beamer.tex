@@ -118,5 +118,99 @@ Lokalno: $C_1|x-y|\leq|f(x)-f(y)|\leq C_2|x-y|, \forall x,y \in [a-eps, a+eps]$
 \end{frame}
 
 
+\begin{frame}[fragile]
+\includegraphics[width=10cm]{graf5.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{verbatim}
+f (constL 0.5  0.001  0.001)
+L  0.7904390832136149  2.2409056829475054  2.2366443367212314  1.0e-3
+\end{verbatim}\pause
+\includegraphics[width=12.5cm]{graf6.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Računanje integralov}
+\begin{itemize}
+\item Mathematica:
+\begin{verbatim}
+N[Integrate[f[x], {x, -1, 1}], 15]
+0.663493666631241
+\end{verbatim}
+\pause
+\vspace{7mm}
+\item Haskell:
+\begin{verbatim}
+zgornja meja = 0.6635009523819319
+
+spodnja meja = 0.6634863808534411
+
+integral = 0.6634936666176671
+\end{verbatim}
+\end{itemize}
+\end{frame}
+
+
+
+
+
+\begin{frame}[fragile]
+\includegraphics[width=10cm]{graf7.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{verbatim}
+g (idL 2 0.001 0.001)
+L  143.0  112.30429833519612  111.81973011116794  1.0e-3
+\end{verbatim}
+\includegraphics<1>[width=12.5cm]{graf8.png}
+\includegraphics<2>[width=12.5cm]{graf9.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Računanje integralov}
+\begin{itemize}
+\item Mathematica:
+\begin{verbatim}
+N[Integrate[g[x], {x, -5, 5}], 15]
+2126.66666666667
+\end{verbatim}
+\pause
+\vspace{7mm}
+\item Haskell:
+\begin{verbatim}
+zgornja meja = 2128.700864620524
+
+spodnja meja = 2124.6324687729543
+
+integral = 2126.6666666970277
+\end{verbatim}
+\end{itemize}
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \end{document}
+
+
+
+
+
+
+
+
+
+

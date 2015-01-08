@@ -1,9 +1,18 @@
-\frametitle{}
-\includegraphics[width=8cm]{graf4.png}
-
-\pause
-Haskell:
+\frametitle{Računanje integralov}
+\begin{itemize}
+\item Mathematica:
 \begin{verbatim}
-h (idD 0)
-D 0.0 1.0 0.0
+N[Integrate[g[x], {x, -5, 5}], 15]
+2126.66666666667
 \end{verbatim}
+\pause
+\vspace{7mm}
+\item Haskell:
+\begin{verbatim}
+zgornja meja = 2128.700864620524
+
+spodnja meja = 2124.6324687729543
+
+integral = 2126.6666666970277
+\end{verbatim}
+\end{itemize}
