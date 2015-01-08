@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2014.6.20)  8 JAN 2015 09:47
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2014.6.20)  8 JAN 2015 10:44
 entering extended mode
 **U:/Faks/PD/FP/Samodejno*odvajanje/Rep/Predstavitev/beamer.tex
 ("U:/Faks/PD/FP/Samodejno odvajanje/Rep/Predstavitev/beamer.tex"
@@ -1175,7 +1175,7 @@ Package hyperref Warning: Option `pdfauthor' has already been used,
 ("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.toc") [4
 
 ]
-<graf1.png, id=145, 864.98157pt x 655.69969pt>
+<graf1.png, id=146, 864.98157pt x 655.69969pt>
 File: graf1.png Graphic file (type png)
  <use graf1.png>
 Package pdftex.def Info: graf1.png used on input line 42.
@@ -1187,7 +1187,7 @@ Overfull \vbox (4.33539pt too high) detected at line 42
 [5
 
  <U:/Faks/PD/FP/Samodejno odvajanje/Rep/Predstavitev/graf1.png>]
-<graf2.png, id=174, 852.93657pt x 616.55344pt>
+<graf2.png, id=175, 852.93657pt x 616.55344pt>
 File: graf2.png Graphic file (type png)
  <use graf2.png>
 Package pdftex.def Info: graf2.png used on input line 49.
@@ -1223,7 +1223,7 @@ File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 
 ]
 ("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.vrb"
-<graf3.png, id=364, 718.18312pt x 471.26062pt>
+<graf3.png, id=365, 718.18312pt x 471.26062pt>
 File: graf3.png Graphic file (type png)
  <use graf3.png>
 Package pdftex.def Info: graf3.png used on input line 2.
@@ -1241,7 +1241,7 @@ Package pdftex.def Info: graf3.png used on input line 2.
 
 ]
 ("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.vrb"
-<graf4.png, id=421, 485.56406pt x 403.5075pt>
+<graf4.png, id=422, 485.56406pt x 403.5075pt>
 File: graf4.png Graphic file (type png)
  <use graf4.png>
 Package pdftex.def Info: graf4.png used on input line 2.
@@ -1257,37 +1257,91 @@ Package pdftex.def Info: graf4.png used on input line 2.
 (pdftex.def)             Requested size: 227.62204pt x 189.14983pt.
 ) [16
 
-] [17
+]
+LaTeX Font Info:    Try loading font information for OT1+lmss on input line 118
+.
+ (C:\Programi\MiKTeX2.9\tex\latex\lm\ot1lmss.fd
+File: ot1lmss.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Try loading font information for OML+lmm on input line 118.
+
+
+(C:\Programi\MiKTeX2.9\tex\latex\lm\omllmm.fd
+File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 118
+.
+
+(C:\Programi\MiKTeX2.9\tex\latex\lm\omslmsy.fd
+File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Try loading font information for OMX+lmex on input line 118
+.
+
+(C:\Programi\MiKTeX2.9\tex\latex\lm\omxlmex.fd
+File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <9> on input line 118.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <6> on input line 118.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 118.
+LaTeX Font Info:    Try loading font information for U+msa on input line 118.
+
+(C:\Programi\MiKTeX2.9\tex\latex\amsfonts\umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 118.
+
+(C:\Programi\MiKTeX2.9\tex\latex\amsfonts\umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <9> not available
+(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 118.
+LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <6> not available
+(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 118.
+LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <5> not available
+(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 118.
+ [17
+
+] [18
+
+] [19
 
 ]
 \tf@nav=\write6
 \tf@toc=\write7
 \tf@snm=\write8
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 119.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 119.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 122.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 122.
 
 ("U:\Faks\PD\FP\Samodejno odvajanje\Rep\Predstavitev\beamer.aux")
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 119.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 119.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 122.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 122.
 Package rerunfilecheck Info: File `beamer.out' has not changed.
-(rerunfilecheck)             Checksum: B3A19A6EB232CA0D3668907FD570E99A;169.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 119.
+(rerunfilecheck)             Checksum: D1FC0AC0A21942CD84414F4ACFECB787;169.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 122.
  ) 
 Here is how much of TeX's memory you used:
- 17520 strings out of 493706
- 328798 string characters out of 3146992
+ 17630 strings out of 493706
+ 330911 string characters out of 3146992
  412035 words of memory out of 3000000
- 20344 multiletter control sequences out of 15000+200000
- 21964 words of font info for 24 fonts, out of 3000000 for 9000
+ 20415 multiletter control sequences out of 15000+200000
+ 41988 words of font info for 43 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
  56i,17n,55p,438b,571s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/Programi/MiKTeX2.9/fonts/enc/dvips/lm/lm-ec.enc}<C:/Programi/MiKTeX2.9/fo
-nts/type1/public/lm/lmss10.pfb><C:/Programi/MiKTeX2.9/fonts/type1/public/lm/lms
-s8.pfb><C:/Programi/MiKTeX2.9/fonts/type1/public/lm/lmss9.pfb><C:/Programi/MiKT
-eX2.9/fonts/type1/public/lm/lmtt9.pfb>
-Output written on beamer.pdf (17 pages, 272261 bytes).
+{C:/Programi/MiKTeX2.9/fonts/enc/dvips/lm/lm-mathit.enc}{C:/Programi/MiKTeX2.
+9/fonts/enc/dvips/lm/lm-rm.enc}{C:/Programi/MiKTeX2.9/fonts/enc/dvips/lm/lm-ec.
+enc}{C:/Programi/MiKTeX2.9/fonts/enc/dvips/lm/lm-mathsy.enc}<C:/Programi/MiKTeX
+2.9/fonts/type1/public/lm/lmmi9.pfb><C:/Programi/MiKTeX2.9/fonts/type1/public/l
+m/lmss10.pfb><C:/Programi/MiKTeX2.9/fonts/type1/public/lm/lmss8.pfb><C:/Program
+i/MiKTeX2.9/fonts/type1/public/lm/lmss9.pfb><C:/Programi/MiKTeX2.9/fonts/type1/
+public/lm/lmsso9.pfb><C:/Programi/MiKTeX2.9/fonts/type1/public/lm/lmsy9.pfb><C:
+/Programi/MiKTeX2.9/fonts/type1/public/lm/lmtt9.pfb>
+Output written on beamer.pdf (19 pages, 313171 bytes).
 PDF statistics:
- 527 PDF objects out of 1000 (max. 8388607)
- 38 named destinations out of 1000 (max. 500000)
+ 599 PDF objects out of 1000 (max. 8388607)
+ 42 named destinations out of 1000 (max. 500000)
  87 words of extra memory for PDF output out of 10000 (max. 10000000)
 

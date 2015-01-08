@@ -2,4 +2,4 @@
 \select@language {slovene}
 \beamer@sectionintoc {1}{Samodejno odvajanje}{5}{0}{1}
 \beamer@sectionintoc {2}{Levi in desni odvodi}{13}{0}{2}
-\beamer@sectionintoc {3}{Lipschitzove konstante}{17}{0}{3}
+\beamer@sectionintoc {3}{Lipschitzeve konstante}{17}{0}{3}
