@@ -5,7 +5,7 @@
 Prvotno bi naj najin projekt obsegal implementacijo samodejnega odvajanja. Skozi raziskovanje sva zašla tudi na druga zanimiva področja in posledično je sedaj projekt sestavljen iz večih (dokaj) nepovezanih podprojektov.
 
 ##Samodejno odvajanje
-Pojma samodejno odvajanje ne smemo zamenjati s pojmoma *simbolično odvajanje* in *numerično odvajanje*. Pri samodejnem odvajanju izkoristimo dejstvo, da je vsaka funkcija sestavljena iz osnovnih aritmetičnih operacij ter elementarnih funkcij (exp, log, sin, cos itd.). Z uporabo verižnega pravila tako lahko samodejno izračunamo odvod poljubnega reda v neki točki.
+Pojma samodejno odvajanje ne smemo zamenjati s pojmoma *simbolično odvajanje* in *numerično odvajanje*. Pri samodejnem odvajanju izkoristimo dejstvo, da je vsaka funkcija (v Haskellu) sestavljena iz osnovnih aritmetičnih operacij ter elementarnih funkcij (exp, log, sin, cos itd.). Z uporabo verižnega pravila tako lahko samodejno izračunamo odvod poljubnega reda v neki točki.
 
 Vrednost funkcije in njene odvode v neki točki bomo predstavili s strukturo `D: data D a = D a (Maybe (D a))`. Na primer struktura `D 1 Just (D 2 Nothing)` predstavlja nekaj, kar ima vrednost v neki točki 1, odvod v isti točki 2 in vse nadalnje odvode enake 0.
 
@@ -36,7 +36,7 @@ Uporaba je enaka, kot pri samodejnem odvajanju, le rezultat je drugačen. Za odv
 
 
 ##Lipschitzove konstante
-Ideja: funkcijo lokalno omejimo z dvema premicama (predstavljenima s koeficientoma) in definiramo aritmetiko. S tem lahko tudi zapletenejše funkcije (lokalno) omejimo in tako jih na primer lahko integriramo.
+Ideja: funkcijo lokalno omejimo z dvema premicama (predstavljenima s koeficientoma) in definiramo pripadajočo aritmetiko. S tem lahko tudi zapletenejše funkcije (lokalno) omejimo in tako jih na primer lahko integriramo.
 
 
 Funkcija, v kateri evaluiramo točko je lahko poljubno blizu pola, torej bi premici rezultat omejevali samo na poljubno majhni okolici. Sledi, da je omejevanje smiselno samo za okolice, ki so zelo blizu 0. Ob tej predpostavki sva aritmetiko definirala brez težav, se pa zalomi pri aplikaciji. 
