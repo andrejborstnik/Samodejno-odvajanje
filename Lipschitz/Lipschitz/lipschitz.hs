@@ -80,11 +80,11 @@ eps :: Fractional a => a
 eps = 0.01
 
 -- |@constL@ je konstantna fukncija.
-constL :: Fractional a => a -> a -> a -> L a
+constL :: Fractional a =>  a -> a -> L a
 constL x eps = L x 0 0 eps
 
 -- | @idL@ je identična funkcija.
-idL :: Fractional a => a -> a -> a -> L a
+idL :: Fractional a => a -> a -> L a
 idL x eps = L x 1 1 eps    
 
 -- |
@@ -102,66 +102,108 @@ instance (Fractional a, Ord a) => Num (L a) where
 		eps = min aeps beps
 		
 	negate (L a au al eps) = L (-a) (-al) (-au) eps
-	signum = signum >< 0
+	signum (L a au al eps) = L (signum a) 0 0 eps
 	
-	-- abs (L a au al aeps) = L (abs a) ((signum a)*au) ((signum a)*al) aeps
-	-- can abs be done better? Propably not.
-	abs (L a au al aeps) = L (abs a) c (-c) aeps  where
+	abs (L a au al eps) = L (abs a) c (-c) eps  where
 		c = max (abs au) (abs al)
 	
 instance (Fractional a, Ord a) => Fractional (L a) where
 	fromRational = (\x -> constL x eps) . fromRational
-	-- TODO finish him
+	
+	-- foreach x \in [a - eps, a + eps]. al * x <= f (a + x) - f a <= au * x
+	-- because 1 / f (a + x) - 1 / f a =  - f a + f (a + x) / f a * f (a + x), we have
+	--  al * x / amax <= 1 / f (a + x) - 1 / f a <= au * x / amin
 	recip (L a au al eps) = L (recip a) au al eps where
-		al1 = (log (a + eps) - a) / eps
-		au1 = (a - log (1 - eps)) / eps
+		amin = min (a - au * eps) (a + al * eps)
+		amax = max (a + au * eps) (a - al * eps)
+		al1 = al / amax
+		au1 = au / amin
 
+		
+mod1 :: (Num a, Ord a) => a -> a -> a
+mod1 x y = if x <= y && x >= 0 then x else if x > 0 then mod1 (x - y) y else mod1 (x + y) y
+		
 instance (Floating a, Ord a) => Floating (L a) where
 	pi = constL pi eps
 	exp (L a au al eps) = L a au1 al1 eps where
-		au1 = (exp (a + eps) - a) / eps
-		al1 = (a - exp (1 - eps)) / eps
+		amin = min (a - au * eps) (a + al * eps)
+		amax = max (a + au * eps) (a - al * eps)
+		au1 = (exp amax - a) / eps
+		al1 = (a - exp amin) / eps
 	log (L a au al eps) = L a au1 al1 eps where
-		al1 = (log (a + eps) - a) / eps
-		au1 = (a - log (1 - eps)) / eps
+		amin = min (a - au * eps) (a + al * eps)
+		amax = max (a + au * eps) (a - al * eps)
+		al1 = (log amax - a) / eps
+		au1 = (a - log amin) / eps
 	sqrt (L a au al eps) = L a au1 al1 eps where
-		al1 = (sqrt (a + eps) - a) / eps
-		au1 = (a - sqrt (1 - eps)) / eps
-	-- TODO
-	sin (L a au al eps) = L a au al eps where
-		amin = a - eps
-		amax = a + eps
-		-- if eps >= pi/2 then
-			-- if a % 2 * pi \in [-pi/2, pi/2] then 
-				-- au1 = cos a -- to se tudi da izboljšat
-				-- al1 = - cos a -- to je samo spodnja meja, lahko se jo še izboljšat, sploh če epx < pi
-			-- else
-				-- al1 = cos a
-				-- au1 = - cos a
-		-- if interval [amin % 2 * pi, amax % 2 * pi] \subset [0, pi/4] then 
-			-- al1 = (sin (a + eps) - a) / eps
-			-- au1 = (a - sin (1 - eps)) / eps
-		-- else if .. \subset [pi/2, pi]
-			-- al1 = (sin (a + eps) - a) / eps
-			-- au1 = (a - sin (1 - eps)) / eps
-		-- else if .. \subset [pi, 3 * pi/2]
-			-- au1 = (sin (a + eps) - a) / eps
-			-- al1 = (a - sin (1 - eps)) / eps
-		-- else if .. \subset [3 * pi/2, 2*pi]
-			-- au1 = (sin (a + eps) - a) / eps
-			-- al1 = (a - sin (1 - eps)) / eps
-		-- ce gre pa cez vec intervalov ...
+		amin = min (a - au * eps) (a + al * eps)
+		amax = max (a + au * eps) (a - al * eps)
+		al1 = (sqrt amax - a) / eps
+		au1 = (a - sqrt amin) / eps
+		
+	-- TODO, se da še izboljšati tist -1, 1
+	sin (L a au al eps) = L a au1 al1 eps where
+		amin = min (a - au * eps) (a + al * eps)
+		amax = max (a + au * eps) (a - al * eps)
+		au1 = 
+			if eps > pi/4 then 
+			    1
+			else if amin `mod1` (2 * pi) >= 0 && amax `mod1` (2 * pi) <= pi/2 then
+				(a - sin amin) / eps
+			else if amin `mod1` (2 * pi) >= pi/2 && amax `mod1` (2 * pi) <= pi then
+				(a - sin amin) / eps
+			else if amin `mod1` (2 * pi) >= pi && amax `mod1` (2 * pi) <= 3 * pi / 2 then
+				(sin amax - a) / eps
+			else if amin `mod1` (2 * pi) >= 3 * pi / 2 && amax `mod1` (2 * pi) <= 2 * pi then
+				(sin amax - a) / eps
+			else 1
+		al1 = 
+			if eps > pi/4 then 
+			    -1
+			else if amin `mod1` (2 * pi) >= 0 && amax `mod1` (2 * pi) <= pi/2 then
+				(sin amax - a) / eps
+			else if amin `mod1` (2 * pi) >= pi/2 && amax `mod1` (2 * pi) <= pi then
+				(sin amax - a) / eps
+			else if amin `mod1` (2 * pi) >= pi && amax `mod1` (2 * pi) <= 3 * pi / 2 then
+				(a - sin amin) / eps
+			else if amin `mod1` (2 * pi) >= 3 * pi / 2 && amax `mod1` (2 * pi) <= 2 * pi then
+				(a - sin amin) / eps
+			else -1
+			
+		
+		-- if eps >= pi/4 then
+			-- au1 = 1 -- to se tudi da izboljšat
+			-- al1 = - 1 -- to je samo spodnja meja, lahko se jo še izboljšat, sploh če epx < pi
+		-- else 
+			-- if amin `mod` (2 * pi) >= 0 && amax `mod` (2 * pi) <= pi/2 then 
+				-- al1 = (sin amax - a) / eps
+				-- au1 = (a - sin amin) / eps
+			-- else if amin `mod` (2 * pi) >= pi/2 && amax `mod` (2 * pi) <= pi then
+				-- al1 = (sin amax - a) / eps
+				-- au1 = (a - sin amin) / eps
+			-- else if amin `mod` (2 * pi) >= pi && amax `mod` (2 * pi) <= 3 * pi / 2
+				-- au1 = (sin amax - a) / eps
+				-- al1 = (a - sin amin) / eps
+			-- else if amin `mod` (2 * pi) >= 3 * pi / 2 && amax `mod` (2 * pi) <= 2 * pi
+				-- au1 = (sin amax - a) / eps
+				-- al1 = (a - sin amin) / eps
+		-- kaj pa če je čez več intervalov?
 
 		
-	-- cos = cos >< - sin -- podobno kot sin
-	-- asin = asin >< recip (sqrt (1 - sqr))
-	-- acos = acos >< - recip (sqrt (1 - sqr))
-	-- atan = atan >< recip (1 + sqr)
-	-- sinh = sinh >< cosh
-	-- cosh = cosh >< sinh
-	-- asinh = asinh >< recip (sqrt (1 + sqr))
-	-- acosh = acosh >< recip (sqrt (- 1 + sqr))
-	-- atanh = asin >< recip (1 - sqr)
+	cos x = sin (pi/2 - x)
+	-- asin -- naraščujoča, treba pogledat na kerem intervalu naj bi jo omejila
+	-- acos -- padajoča, treba pogledat na kerem intervalu naj bi jo omejila
+	atan (L a al au eps) = L (atan a) au1 al1 eps where
+		amin = min (a - au * eps) (a + al * eps)
+		amax = max (a + au * eps) (a - al * eps)
+		au1 = (atan amax - a) / eps
+		al1 = (a - atan amin) / eps
+	sinh x = (exp x - exp (-x)) / 2
+	cosh x = (exp x + exp (-x)) / 2
+	tanh x = sinh x / cosh x
+	asinh x = log (x + sqrt (sqr x + 1))
+	acosh x = log (x + sqrt (x - 1) * sqrt (x + 1))
+	atanh x = log (1 + x) / 2 - log (1 - x) / 2
 
 instance Eq a => Eq (L a) where
 	L a _ _ _  == L b _ _ _  = (a == b)
