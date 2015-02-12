@@ -1,4 +1,4 @@
-{-|
+﻿{-|
 Module      : Lipschitz
 Description :  Omejitev funkcij z premicami (koeficientom pravimo Lipschitzove konstante)
 Copyright   : (c) Andrej Borštnik, Barbara Bajcer, 2015
@@ -13,12 +13,9 @@ module Lipschitz.Lipschitz
 , constL
 , idL
 , sqr
-, integralR
-, integralRz
-, integralRs
-, integralF
-, integralFz
-, integralFs
+, integral
+, integralZ
+, integralS
 )
 where
 
@@ -76,16 +73,14 @@ instance (Show a) => Show (L a) where
 infinity :: Fractional a => a
 infinity = 1/0
 
-eps :: Fractional a => a
-eps = 0.01
 
 -- |@constL@ je konstantna fukncija.
-constL :: Fractional a =>  a -> a -> L a
-constL x eps = L x 0 0 eps
+constL :: Fractional a => a -> L a
+constL x = L x 0 0 infinity
 
 -- | @idL@ je identična funkcija.
-idL :: Fractional a => a -> a -> L a
-idL x eps = L x 1 1 eps    
+idL :: Fractional a => a -> L a
+idL x = L x 1 1 infinity 
 
 -- |
 sqr :: Num a => a -> a
@@ -93,14 +88,23 @@ sqr a = a * a
 
 -- it is beneficial to use points with the same eps, because we lose the least precision
 instance (Fractional a, Ord a) => Num (L a) where
-	fromInteger = (\x -> constL x eps) . fromInteger
+	fromInteger = constL . fromInteger
 	L a au al aeps + L b bu bl beps = L (a + b) (au + bu) (al + bl) (min aeps beps)
 	
 	-- !!!!
-	L a au al aeps * L b bu bl beps = 
-		L (a * b) (max (au * bu * eps + au * b + bu * a) (al * bl * eps + al * b + bl * a)) (min (al * bl * eps + al * b + bl * a) (min (al * bu * eps + al * b + bu * a) (au * bl * eps + au * b + bl * a))) eps where
+	L a au al aeps * L b bu bl beps = L (a * b) au1 al1 eps where
 		eps = min aeps beps
-		
+		aud = max (au * bu * eps + au * b + bu * a) (max (al * bl * eps + al * b + bl * a) (max (al * bu * eps + al * b + bu * a) (au * bl * eps + au * b + bl * a)))
+		ald = min (al * bl * eps + al * b + bl * a) (min (al * bu * eps + al * b + bu * a) (min (au * bl * eps + au * b + bl * a) (au * bu * eps + au * b + bu * a)))
+		aul = min (- al * bl * eps + al * b + bl * a) (min (- al * bu * eps + al * b + bu * a) (min (- au * bl * eps + au * b + bl * a) (- au * bu * eps + au * b + bu * a)))
+		all = max (- au * bu * eps + au * b + bu * a) (max (- al * bl * eps + al * b + bl * a) (max (- al * bu * eps + al * b + bu * a) (- au * bl * eps + au * b + bl * a)))
+		au1
+			| (au < infinity && bu < infinity) = max aul aud
+			| otherwise = infinity
+		al1 
+			|(al > - infinity && bl > - infinity) = min all ald
+			| otherwise = - infinity
+    
 	negate (L a au al eps) = L (-a) (-al) (-au) eps
 	signum (L a au al eps) = L (signum a) 0 0 eps
 	
@@ -108,40 +112,58 @@ instance (Fractional a, Ord a) => Num (L a) where
 		c = max (abs au) (abs al)
 	
 instance (Fractional a, Ord a) => Fractional (L a) where
-	fromRational = (\x -> constL x eps) . fromRational
+	fromRational = constL . fromRational
 	
-	-- foreach x \in [a - eps, a + eps]. al * x <= f (a + x) - f a <= au * x
-	-- because 1 / f (a + x) - 1 / f a =  - f a + f (a + x) / f a * f (a + x), we have
-	--  al * x / amax <= 1 / f (a + x) - 1 / f a <= au * x / amin
-	recip (L a au al eps) = L (recip a) au al eps where
+	-- foreach x \in [a, a + eps]. al * x <= f (a + x) - f a <= au * x
+	-- because 1 / f (a + x) - 1 / f a =  f a - f (a + x) / f a * f (a + x), we have
+	--  - au * x / fmax / f a <= 1 / f (a + x) - 1 / f a <= - al * x / fmin / f a
+  -- podobno za x \in [a - eps, a]
+  -- TODO pohandlaj ko je eps neskončno, a +- neskončno in ko a+-eps seka 0
+	recip (L a au al eps) = L (recip a) au1 al1 eps where
 		amin = min (a - au * eps) (a + al * eps)
 		amax = max (a + au * eps) (a - al * eps)
-		al1 = al / amax
-		au1 = au / amin
+		al1 = (max (- au) (- al)) / amax / a
+		au1 = (min (- al) (- au)) / amin / a
 
 		
 mod1 :: (Num a, Ord a) => a -> a -> a
 mod1 x y = if x <= y && x >= 0 then x else if x > 0 then mod1 (x - y) y else mod1 (x + y) y
 		
 instance (Floating a, Ord a) => Floating (L a) where
-	pi = constL pi eps
-	exp (L a au al eps) = L a au1 al1 eps where
+	pi = constL pi
+	exp (L a au al eps) = L (exp a) au1 al1 eps where
 		amin = min (a - au * eps) (a + al * eps)
 		amax = max (a + au * eps) (a - al * eps)
-		au1 = (exp amax - a) / eps
-		al1 = (a - exp amin) / eps
-	log (L a au al eps) = L a au1 al1 eps where
+		au1
+			| (eps == infinity || a == infinity || a == - infinity) = infinity
+			| otherwise = (exp amax - exp a) / eps
+		al1 
+			| (a == infinity || eps == infinity || a == - infinity) = 0
+			| otherwise = (exp a - exp amin) / eps
+  --TODO pohandlaj, ko a-eps seka 0
+	log (L a au al eps) = L (log a) au1 al1 eps where
 		amin = min (a - au * eps) (a + al * eps)
 		amax = max (a + au * eps) (a - al * eps)
-		al1 = (log amax - a) / eps
-		au1 = (a - log amin) / eps
-	sqrt (L a au al eps) = L a au1 al1 eps where
+		al1 
+			| (a < 0) = infinity/infinity
+			| (eps == infinity || a == infinity || a == 0) = 0
+			| otherwise = (log amax - log a) / eps
+		au1 
+			| (a < 0) = infinity/infinity
+			| (eps == infinity || a == infinity || a == 0) = infinity
+			| otherwise = (log a - log amin) / eps
+  --TODO pohandlaj, ko a-eps seka 0
+	sqrt (L a au al eps) = L (sqrt a) au1 al1 eps where
 		amin = min (a - au * eps) (a + al * eps)
 		amax = max (a + au * eps) (a - al * eps)
-		al1 = (sqrt amax - a) / eps
-		au1 = (a - sqrt amin) / eps
+		al1
+			| (eps == infinity || a == infinity || a == 0) = 0
+			| otherwise = (sqrt amax - sqrt a) / eps
+		au1
+			| (eps == infinity || a == infinity || a == 0) = infinity
+			| otherwise = (sqrt a - sqrt amin) / eps
 		
-	-- TODO, se da še izboljšati tist -1, 1
+	-- TODO, se da še izboljšati tist -1, 1, treba je pohandlat eps = neskoncno, a = +- neskoncno
 	sin (L a au al eps) = L a au1 al1 eps where
 		amin = min (a - au * eps) (a + al * eps)
 		amax = max (a + au * eps) (a - al * eps)
@@ -149,25 +171,25 @@ instance (Floating a, Ord a) => Floating (L a) where
 			if eps > pi/4 then 
 			    1
 			else if amin `mod1` (2 * pi) >= 0 && amax `mod1` (2 * pi) <= pi/2 then
-				(a - sin amin) / eps
+				(sin a - sin amin) / eps
 			else if amin `mod1` (2 * pi) >= pi/2 && amax `mod1` (2 * pi) <= pi then
-				(a - sin amin) / eps
+				(sin a - sin amin) / eps
 			else if amin `mod1` (2 * pi) >= pi && amax `mod1` (2 * pi) <= 3 * pi / 2 then
-				(sin amax - a) / eps
+				(sin amax - sin a) / eps
 			else if amin `mod1` (2 * pi) >= 3 * pi / 2 && amax `mod1` (2 * pi) <= 2 * pi then
-				(sin amax - a) / eps
+				(sin amax - sin a) / eps
 			else 1
 		al1 = 
 			if eps > pi/4 then 
 			    -1
 			else if amin `mod1` (2 * pi) >= 0 && amax `mod1` (2 * pi) <= pi/2 then
-				(sin amax - a) / eps
+				(sin amax - sin a) / eps
 			else if amin `mod1` (2 * pi) >= pi/2 && amax `mod1` (2 * pi) <= pi then
-				(sin amax - a) / eps
+				(sin amax - sin a) / eps
 			else if amin `mod1` (2 * pi) >= pi && amax `mod1` (2 * pi) <= 3 * pi / 2 then
-				(a - sin amin) / eps
+				(sin a - sin amin) / eps
 			else if amin `mod1` (2 * pi) >= 3 * pi / 2 && amax `mod1` (2 * pi) <= 2 * pi then
-				(a - sin amin) / eps
+				(sin a - sin amin) / eps
 			else -1
 			
 		
@@ -196,8 +218,12 @@ instance (Floating a, Ord a) => Floating (L a) where
 	atan (L a al au eps) = L (atan a) au1 al1 eps where
 		amin = min (a - au * eps) (a + al * eps)
 		amax = max (a + au * eps) (a - al * eps)
-		au1 = (atan amax - a) / eps
-		al1 = (a - atan amin) / eps
+		au1
+			| (eps == infinity || a == infinity || a == - infinity) = 1
+			| otherwise = (atan amax - atan a) / eps
+		al1 
+			| (eps == infinity || a == infinity || a == - infinity) = 0
+			| otherwise = (atan a - atan amin) / eps
 	sinh x = (exp x - exp (-x)) / 2
 	cosh x = (exp x + exp (-x)) / 2
 	tanh x = sinh x / cosh x
@@ -214,53 +240,28 @@ rread (L a au al eps) = (a, au, al)
 rread1 :: L a -> (a, a, a, a)
 rread1 (L a au al eps) = (a, au, al, eps)
 
--- |Izračuna približek za določeni integral podane racionalne funkcije s korakom h.
-integralR :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
-integralR f a1 a2 h = if a2 <= a1 then 0 else a + integralR f (a1 + h) a2 h where
+-- |Izračuna približek za določeni integral podane funkcije s korakom h.
+integral :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
+integral f a1 a2 h = if a2 <= a1 then 0 else a + integral f (a1 + h) a2 h where
 	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
-	(x, y, z) = rread (f (idL (a1 + interval) interval))
+	(x, y, z) = rread (f (L (a1 + interval) 1 1 interval))
 	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
 	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
 	a = (zgornja + spodnja) / 2
 
--- |Izračuna (približno) zgornjo mejo za določeni integral podane racionalne funkcije s korakom h.
-integralRz :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
-integralRz f a1 a2 h = if a2 <= a1 then 0 else a + integralRz f (a1 + h) a2 h where
+-- |Izračuna (približno) zgornjo mejo za določeni integral podane funkcije s korakom h.
+integralZ :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
+integralZ f a1 a2 h = if a2 <= a1 then 0 else a + integralZ f (a1 + h) a2 h where
 	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
-	(x, y, z) = rread (f (idL (a1 + interval) interval))
+	(x, y, z) = rread (f (L (a1 + interval) 1 1 interval))
 	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
 	a = zgornja
 
--- |Izračuna (približno) spodnjo mejo za določeni integral podane racionalne funkcije s korakom h.
-integralRs :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
-integralRs f a1 a2 h = if a2 <= a1 then 0 else a + integralRs f (a1 + h) a2 h where
+-- |Izračuna (približno) spodnjo mejo za določeni integral podane funkcije s korakom h.
+integralS :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
+integralS f a1 a2 h = if a2 <= a1 then 0 else a + integralS f (a1 + h) a2 h where
 	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
-	(x, y, z) = rread (f (idL (a1 + interval) interval))
-	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
-	a = spodnja
-
--- |Izračuna približek za določeni integral podane Floating funkcije s korakom h.
-integralF :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
-integralF f a1 a2 h = if a2 <= a1 then 0 else a + integralF f (a1 + h) a2 h where
-	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
-	(x, y, z) = rread (f (constL (a1 + interval) interval))
-	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
-	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
-	a = (zgornja + spodnja) / 2
-
--- |Izračuna (približno) zgornjo mejo za določeni integral podane Floating funkcije s korakom h.
-integralFz :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
-integralFz f a1 a2 h = if a2 <= a1 then 0 else a + integralFz f (a1 + h) a2 h where
-	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
-	(x, y, z) = rread (f (constL (a1 + interval) interval))
-	zgornja = 2 * interval * x + interval * y / 2 - interval * z / 2
-	a = zgornja
-
--- |Izračuna (približno) spodnjo mejo za določeni integral podane Floating funkcije s korakom h.
-integralFs :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
-integralFs f a1 a2 h = if a2 <= a1 then 0 else a + integralFs f (a1 + h) a2 h where
-	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
-	(x, y, z) = rread (f (constL (a1 + interval) interval))
+	(x, y, z) = rread (f (L (a1 + interval) 1 1 interval))
 	spodnja = 2 * interval * x - interval * y / 2 + interval * z / 2
 	a = spodnja
 	
@@ -272,16 +273,16 @@ f0 :: Floating a => a -> a
 f0 z = z
 
 f1 :: Floating a => a -> a
-f1 z = z+z+z + z + z
+f1 z = 1 / (1 / z)
 
 f2 :: Floating a => a -> a
-f2 z = 5 * z
+f2 z = 5 * z * z
 
 f3 :: Floating a => a -> a
-f3 z = sin (5 * z)
+f3 z = sqrt (2 * (1 / (1 / z)))
 
 f4 :: Floating a => a -> a
-f4 z = cos(sqrt (sin z))
+f4 z = sqrt (2 * z)
 
 f5 :: Floating a => a -> a
 f5 z = 1 - sqr (cos z)
