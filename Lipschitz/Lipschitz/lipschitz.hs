@@ -114,16 +114,25 @@ instance (Fractional a, Ord a) => Num (L a) where
 instance (Fractional a, Ord a) => Fractional (L a) where
 	fromRational = constL . fromRational
 	
-	-- foreach x \in [a, a + eps]. al * x <= f (a + x) - f a <= au * x
+	-- foreach x \in [0, eps]. al * x <= f (a + x) - f a <= au * x
 	-- because 1 / f (a + x) - 1 / f a =  f a - f (a + x) / f a * f (a + x), we have
 	--  - au * x / fmax / f a <= 1 / f (a + x) - 1 / f a <= - al * x / fmin / f a
-  -- podobno za x \in [a - eps, a]
-  -- TODO pohandlaj ko je eps neskončno, a +- neskončno in ko a+-eps seka 0
-	recip (L a au al eps) = L (recip a) au1 al1 eps where
+    -- podobno za x \in [- eps, 0]
+  
+	recip (L a au al eps) = L (recip a) au1 al1 eps1 where
 		amin = min (a - au * eps) (a + al * eps)
 		amax = max (a + au * eps) (a - al * eps)
-		al1 = (max (- au) (- al)) / amax / a
-		au1 = (min (- al) (- au)) / amin / a
+		eps1
+			| (a > 0 && (a - eps < 0 || a - amin < 0)) = a
+			| (a < 0 && (a + eps > 0 || a + amax < 0)) = -a
+			| (amax - a > eps || a - amin > eps) = max (amax - a) (a - amin)
+			| otherwise = eps
+		al1 
+			| (a == infinity || eps1 == infinity || a == - infinity || a == 0) = -infinity
+			| otherwise = (max (- au) (- al)) / amax / a
+		au1 
+			| (a == infinity || eps1 == infinity || a == - infinity || a == 0) = infinity
+			| otherwise = (min (- al) (- au)) / amin / a
 
 		
 mod1 :: (Num a, Ord a) => a -> a -> a
@@ -131,42 +140,60 @@ mod1 x y = if x <= y && x >= 0 then x else if x > 0 then mod1 (x - y) y else mod
 		
 instance (Floating a, Ord a) => Floating (L a) where
 	pi = constL pi
-	exp (L a au al eps) = L (exp a) au1 al1 eps where
+	exp (L a au al eps) = L (exp a) au1 al1 eps1 where
 		amin = min (a - au * eps) (a + al * eps)
 		amax = max (a + au * eps) (a - al * eps)
+		eps1
+			| (amax - a > eps || a - amin > eps) = max (amax - a) (a - amin)
+			| otherwise = eps
 		au1
-			| (eps == infinity || a == infinity || a == - infinity) = infinity
-			| otherwise = (exp amax - exp a) / eps
+			| (eps1 == infinity || a == infinity || a == - infinity) = infinity
+			| otherwise = (exp (a + eps1) - exp a) / eps1
 		al1 
-			| (a == infinity || eps == infinity || a == - infinity) = 0
-			| otherwise = (exp a - exp amin) / eps
-  --TODO pohandlaj, ko a-eps seka 0
-	log (L a au al eps) = L (log a) au1 al1 eps where
+			| (a == infinity || eps1 == infinity || a == - infinity) = 0
+			| otherwise = (exp a - exp (a - eps1)) / eps1
+			
+	log (L a au al eps) = L (log a) au1 al1 eps1 where
 		amin = min (a - au * eps) (a + al * eps)
 		amax = max (a + au * eps) (a - al * eps)
+		eps1
+			| (a - eps < 0 || a - amin < 0) = a
+			| (amax - a > eps || a - amin > eps) = max (amax - a) (a - amin)
+			| otherwise = eps
 		al1 
 			| (a < 0) = infinity/infinity
-			| (eps == infinity || a == infinity || a == 0) = 0
-			| otherwise = (log amax - log a) / eps
+			| (eps1 == infinity || a == infinity || a == 0) = 0
+			| otherwise = (log (a + eps1) - log a) / eps1
 		au1 
 			| (a < 0) = infinity/infinity
-			| (eps == infinity || a == infinity || a == 0) = infinity
-			| otherwise = (log a - log amin) / eps
-  --TODO pohandlaj, ko a-eps seka 0
-	sqrt (L a au al eps) = L (sqrt a) au1 al1 eps where
+			| (eps1 == infinity || a == infinity || a == 0) = infinity
+			| otherwise = (log a - log (a - eps1)) / eps1
+		
+	sqrt (L a au al eps) = L (sqrt a) au1 al1 eps1 where
 		amin = min (a - au * eps) (a + al * eps)
 		amax = max (a + au * eps) (a - al * eps)
+		eps1
+			| (a < 0) = infinity/infinity
+			| (a - eps < 0 || a - amin < 0) = a
+			| (amax - a > eps || a - amin > eps) = max (amax - a) (a - amin)
+			| otherwise = eps
 		al1
-			| (eps == infinity || a == infinity || a == 0) = 0
-			| otherwise = (sqrt amax - sqrt a) / eps
+			| (a < 0) = infinity/infinity
+			| (eps1 == infinity || a == infinity || a == 0) = 0
+			| otherwise = (sqrt (a + eps1) - sqrt a) / eps1
 		au1
-			| (eps == infinity || a == infinity || a == 0) = infinity
-			| otherwise = (sqrt a - sqrt amin) / eps
+			| (eps1 == infinity || a == infinity || a == 0) = infinity
+			| otherwise = (sqrt a - sqrt (a - eps1)) / eps1
 		
 	-- TODO, se da še izboljšati tist -1, 1, treba je pohandlat eps = neskoncno, a = +- neskoncno
 	sin (L a au al eps) = L a au1 al1 eps where
 		amin = min (a - au * eps) (a + al * eps)
 		amax = max (a + au * eps) (a - al * eps)
+		
+		eps1
+			| (amax - a > eps || a - amin > eps) = max (amax - a) (a - amin)
+			| otherwise = eps
+			
 		au1 = 
 			if eps > pi/4 then 
 			    1
@@ -266,8 +293,6 @@ integralS f a1 a2 h = if a2 <= a1 then 0 else a + integralS f (a1 + h) a2 h wher
 	a = spodnja
 	
 	
-	
-	
 
 f0 :: Floating a => a -> a
 f0 z = z
@@ -286,7 +311,6 @@ f4 z = sqrt (2 * z)
 
 f5 :: Floating a => a -> a
 f5 z = 1 - sqr (cos z)
-
 
 f7 :: Floating a => a -> a
 f7 z = (cos z) * z
