@@ -75,14 +75,32 @@ sqr a = a * a
 instance (Fractional a, Ord a) => Num (L a) where
 	fromInteger = constL . fromInteger
 	L a au al aeps1 aeps2 + L b bu bl beps1 beps2 = L (a + b) (au + bu) (al + bl) eps1 eps2 where
-		eps1 = (aeps1 + beps1)/2
-		eps2 = (aeps2 + beps2)/2
+		eps1
+			| (aeps1 == infinity && aeps2 == infinity && au == 0 && al == 0) = beps1
+			| (beps1 == infinity && beps2 == infinity && bu == 0 && bl == 0) = aeps1
+			| otherwise = (aeps1 + beps1)/2
+		eps2 
+			| (aeps1 == infinity && aeps2 == infinity && au == 0 && al == 0) = beps2
+			| (beps1 == infinity && beps2 == infinity && bu == 0 && bl == 0) = aeps2
+			| otherwise = (aeps2 + beps2)/2
 	
 	L a au al aeps1 aeps2 * L b bu bl beps1 beps2 = L (a * b) u l eps1 eps2 where
-		eps1 = (aeps1 + beps1)/2
-		eps2 = (aeps2 + beps2)/2
-		u1 = max (au * bu * eps2 + au * b + bu * a) (max (al * bl * eps2 + al * b + bl * a) (max (- al * bu * eps1 + al * b + bu * a) (- au * bl * eps1 + au * b + bl * a)))
-		l1 = min (au * bl * eps2 + au * b + bl * a) (min (al * bu * eps2 + al * b + bu * a) (min (- al * bl * eps1 + al * b + bl * a) (- au * bu * eps1 + au * b + bu * a)))
+		eps1
+			| (aeps1 == infinity && aeps2 == infinity && au == 0 && al == 0) = min aeps1 beps1
+			| (beps1 == infinity && beps2 == infinity && bu == 0 && bl == 0) = min aeps1 beps1
+			| otherwise = (aeps1 + beps1)/2
+		eps2 
+			| (aeps1 == infinity && aeps2 == infinity && au == 0 && al == 0) = min aeps2 beps2
+			| (beps1 == infinity && beps2 == infinity && bu == 0 && bl == 0) = min aeps2 beps2
+			| otherwise = (aeps2 + beps2)/2
+		u1 
+			| (aeps1 == infinity && aeps2 == infinity && au == 0 && al == 0) = a*bu
+			| (beps1 == infinity && beps2 == infinity && bu == 0 && bl == 0) = b*au
+			| otherwise =  max (au * bu * eps2 + au * b + bu * a) (max (al * bl * eps2 + al * b + bl * a) (max (- al * bu * eps1 + al * b + bu * a) (- au * bl * eps1 + au * b + bl * a)))
+		l1
+			| (aeps1 == infinity && aeps2 == infinity && au == 0 && al == 0) = bl*a
+			| (beps1 == infinity && beps2 == infinity && bu == 0 && bl == 0) = al*b
+			| otherwise = min (au * bl * eps2 + au * b + bl * a) (min (al * bu * eps2 + al * b + bu * a) (min (- al * bl * eps1 + al * b + bl * a) (- au * bu * eps1 + au * b + bu * a)))
 		u
 			| (au < infinity && bu < infinity) = u1
 			| otherwise = infinity
@@ -227,7 +245,13 @@ instance (Floating a, Ord a) => Floating (L a) where
 		-- kaj pa če je čez več intervalov?
 
 		
-	cos x = sin (pi/2 - x)
+	cos (L a au al e1 e2) = L (cos a) u l eps1 eps2 where
+		amin = min (a - au * e1) (a + al * e2)
+		amax = max (a + au * e2) (a - al * e1)
+		eps1 = a - amin
+		eps2 = amax - a			
+		u = 1
+		l = -1
 	
 	asin (L a au al e1 e2) = L (asin a) u l eps1 eps2 where
 		amin = min (a - au * e1) (a + al * e2)
@@ -297,6 +321,9 @@ rread (L a au al eps1 eps2) = (a, au, al)
 rread1 :: L a -> (a, a, a, a, a)
 rread1 (L a au al eps1 eps2) = (a, au, al, eps1, eps2)
 
+lip :: (Floating a, Ord a) =>(L a -> L a) -> a -> a -> a -> L a
+lip f a e1 e2 = f (L a 1 1 e1 e2)
+
 -- |Izračuna približek za določeni integral podane funkcije s korakom h.
 integral :: (Floating a, Ord a) => (L a -> L a) -> a -> a -> a -> a
 integral f a1 a2 h = if a2 <= a1 then 0 else a + integral f (a1 + h) a2 h where
@@ -319,10 +346,10 @@ integralS f a1 a2 h = if a2 <= a1 then 0 else a + integralS f (a1 + h) a2 h wher
 	interval = if (a2 - a1 < h) then (a2 - a1) / 2 else h / 2
 	(x, u, l, e1, e2) = rread1 (f (L (a1 + interval) 1 1 interval interval))
 	a = x * (e1 + e2) - e1 * u * e1 / 2 + e2 * l * e2 / 2
-	
+
 	
 f0 :: Floating a => a -> a
-f0 z = z
+f0 z = 3 * z
 
 f1 :: Floating a => a -> a
 f1 z = 1 / (1 / z)
@@ -334,13 +361,13 @@ f3 :: Floating a => a -> a
 f3 z = sqrt (2 * (1 / (1 / z)))
 
 f4 :: Floating a => a -> a
-f4 z = sqrt (2 * z)
+f4 z = sqrt (z)
 
 f5 :: Floating a => a -> a
-f5 z = 1 - sqr (cos z)
+f5 z = sqr (cos z)
 
 f7 :: Floating a => a -> a
-f7 z = (cos z) * z
+f7 z = (cos z)
 
 f8 :: Floating a => a -> a
 f8 z = 1 - sqr (cos z)
