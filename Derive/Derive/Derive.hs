@@ -143,8 +143,6 @@ nth f x n = r where
 	r = if n > l then 0 else s!!n
 	
 	
-	
-	
 
 f1 :: Floating a => a -> a
 f1 z = sqrt ((sqr z) * 3 * sin z)
